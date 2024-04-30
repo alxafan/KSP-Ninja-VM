@@ -27,8 +27,10 @@
 #define IMMEDIATE(x) ((x) & 0x00FFFFFF)
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))  // 0x00800000 enstpricht einer 1 beim 24. Bit    Muss bei negativen Zahlen durchgeführt werden, damit bei Berechnungen das Vorzeichen beachtet wird, sonst wird es als positive Zahl betrachtet
 
-unsigned int stack[10000];
+unsigned int *stack;
+int *sda;
 int sp = 0;
+int fp = 0;
 int halt = 0;
 
 void execute(unsigned int IR) {
@@ -36,7 +38,7 @@ void execute(unsigned int IR) {
     case 0:
         halt = 1;
         break;
-    case 1: // TODO: negative numbers
+    case 1:
         stack[sp++] = SIGN_EXTEND(IMMEDIATE(IR));
         break;
     case 2:
@@ -77,6 +79,27 @@ void execute(unsigned int IR) {
     case 10:
         printf("%c", stack[--sp]);
         stack[sp] = 0;
+        break;
+    case 11:
+        stack[sp++] = sda[SIGN_EXTEND(IMMEDIATE(IR))];
+        break;
+    case 12:
+        sda[SIGN_EXTEND(IMMEDIATE(IR))] = stack[--sp];
+        break;
+    case 13:
+        stack[sp++] = fp;
+        fp = sp;
+        sp = sp + SIGN_EXTEND(IMMEDIATE(IR));
+        break;
+    case 14:
+        sp = fp;
+        fp = stack[--sp];
+        break;
+    case 15:
+        stack[sp++] = stack[fp + SIGN_EXTEND(IMMEDIATE(IR))];
+        break;
+    case 16:
+        stack[fp + SIGN_EXTEND(IMMEDIATE(IR))] = stack[--sp];
         break;
     }
 
@@ -120,12 +143,34 @@ void printInstruction(unsigned int IR) {
     case 10:
         printf("wrchr");
         break;
+    case 11:
+        printf("pushg\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 12:
+        printf("popg\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 13:
+        printf("asf\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 14:
+        printf("rsf");
+        break;
+    case 15:
+        printf("pushl\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 16:
+        printf("popl");
+        break;
     }
+    printf("\n");
 }
 
 int main(int argc, char *argv[]) {
-    int version = 2;
+    stack = (unsigned int*) malloc(10000);
     unsigned int *pcode;
+    unsigned int IR;
+    int pc = 0;
+    int version = 2;
     int instrNum;
     int staticNum;
     int fileVersion;
@@ -144,12 +189,14 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     else {
+        // open file
         fp = fopen(argv[1], "r");
         if (fp == NULL) {
             printf("%s could not be opened or is an invalid argument given, check the filename or see --help for valid arguments\n", argv[1]);
             exit(-1);
         }
 
+        // check for njbf tag in file
         char *fileformat = (char*) malloc(4);
         if (fileformat == NULL) {
             printf("memory could not be allocated\n");
@@ -160,14 +207,13 @@ int main(int argc, char *argv[]) {
             exit(-1);
         }
 
-        // "Too much Voodoo"
-        // taking the adress of fileformat pointer and adding +1 (C knows that it is char so it adds +4 in the background) to get to the next char
-        if (*fileformat != 'N' || *(fileformat+1) != 'J' || *(fileformat+2) != 'B' || *(fileformat+3) != 'F') {
+        if (fileformat[0] != 'N' || fileformat[1] != 'J' || fileformat[2] != 'B' || fileformat[3] != 'F') {
             printf("given fileformat is not correct, make sure to pass a ninja binary file as the argument\n");
             exit(-1);
         }
         free(fileformat);
 
+        // check for correct version of njvm
         if (fread(&fileVersion, 4, 1, fp) != 1) {
             printf("file-version could not be read\n");
             exit(-1);
@@ -176,17 +222,21 @@ int main(int argc, char *argv[]) {
             printf("the file-version doesn't match the vm-version\n");
             exit(-1);
         }
+
+        // determine number of instructions and global variables
         if (fread(&instrNum, 4, 1, fp) != 1) {
             printf("number of instructions could not be read\n");
             exit(-1);
         }
-
-        //TODO: static variables
         if (fread(&staticNum, 4, 1, fp) != 1) {
             printf("number of static variables could not be read\n");
             exit(-1);
         }
 
+        // initialize the Static Data Area
+        sda = (int*) malloc(staticNum);
+
+        // initialize the program code and read from file
         pcode = (unsigned int *) malloc(instrNum * 4);
         if (pcode == NULL) {
             printf("memory could not be allocated\n");
@@ -197,20 +247,17 @@ int main(int argc, char *argv[]) {
             printf("program-code could not be read\n");
             exit(-1);
         }
-        
+
+        // close file
         fclose(fp);
     }
 
     printf("Ninja Virtual Machine started\n");
 
-    unsigned int IR;
-    int pc = 0;
-
     // Printing the assembled code
     for (int i = 0; i < instrNum-1; i++) {
         printf("%03d:\t",i);
         printInstruction((unsigned int) *(pcode+i));
-        printf("\n");
     }
 
     while(!halt)
@@ -223,6 +270,5 @@ int main(int argc, char *argv[]) {
     }
     
     printf("Ninja Virtual Machine stopped\n");
-
     exit(0);
 }
