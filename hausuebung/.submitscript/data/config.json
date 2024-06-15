@@ -1,0 +1,33 @@
+{
+  "course_name": "KSP-ss24",
+  "server": {
+    "hostname": "https://vmar01.mni.thm.de",
+    "port": 8443
+  },
+  "max_team_size": 2,
+  "assignment_ids": [
+    "Aufgabe-1",
+    "Aufgabe-2"
+  ],
+  "skeleton_variants": [
+    {
+      "name": "njvm",
+      "root": "njvm",
+      "build": "./mknjvm",
+      "allowed_files": [
+        "*.h",
+        "*.c",
+        "mknjvm",
+        "*akefile",
+        "*CMakeLists.txt",
+        "*.a",
+        "*.txt",
+        "*.md",
+        "*.adoc"
+      ],
+      "variant_data": {}
+    }
+  ]
+}
+
+

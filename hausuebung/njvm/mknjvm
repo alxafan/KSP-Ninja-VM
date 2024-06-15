@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# TODO: Add the build command for your njvm.
+# You may choose to build the files:
+# - by hand (directly with gcc)
+# - via make
+# - via cmake
+#
+# in any case, make sure that at theend of the compilation process, the resulting file 
+# is called njvm and is located in the same directory as this script mknjvm.
+
+# The following line is an example for 
+
+echo gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
+gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
+

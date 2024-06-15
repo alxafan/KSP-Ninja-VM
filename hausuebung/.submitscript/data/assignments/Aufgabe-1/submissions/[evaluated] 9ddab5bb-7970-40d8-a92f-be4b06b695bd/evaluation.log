@@ -1,0 +1,150 @@
+[2024-05-28 19:04:59.346567] Start of evaluation log for submission '9ddab5bb-7970-40d8-a92f-be4b06b695bd'.
+[2024-05-28 19:04:59.346902] Team member: ('Afanasjew', 'Alexander', '5452745')
+[2024-05-28 19:04:59.346934] Team member: ('Matveev', 'Nikita', '5423235')
+[2024-05-28 19:04:59.358781] Preparing the sandbox
+[2024-05-28 19:04:59.976330] Unpacking submission in sandbox
+[2024-05-28 19:05:00.386265] Building the test subject
+[2024-05-28 19:05:00.386654] Building submitted njvm with the supplied 'mknjvm'-script.
+[2024-05-28 19:05:00.723712] Build log:
+gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
+[2024-05-28 19:05:00.869306] Beginning evaluation.
+[2024-05-28 19:05:00.869462] Evaluating test00 with the submitted solution.
+[2024-05-28 19:05:00.870539] Running '/home/solution/njvm/njvm /home/tests/test00/test00.bin'.
+[2024-05-28 19:05:00.998942] Outputs match.
+[2024-05-28 19:05:00.998982] Test passed.
+[2024-05-28 19:05:00.999007] Running Score: 1/1
+
+[2024-05-28 19:05:00.999045] Evaluating test01 with the submitted solution.
+[2024-05-28 19:05:01.000171] Running '/home/solution/njvm/njvm /home/tests/test01/test01.bin'.
+[2024-05-28 19:05:01.130604] Outputs match.
+[2024-05-28 19:05:01.130628] Test passed.
+[2024-05-28 19:05:01.130639] Running Score: 2/2
+
+[2024-05-28 19:05:01.130655] Evaluating test02 with the submitted solution.
+[2024-05-28 19:05:01.131511] Running '/home/solution/njvm/njvm /home/tests/test02/test02.bin'.
+[2024-05-28 19:05:01.271168] Outputs match.
+[2024-05-28 19:05:01.271189] Test passed.
+[2024-05-28 19:05:01.271202] Running Score: 3/3
+
+[2024-05-28 19:05:01.271218] Evaluating test03 with the submitted solution.
+[2024-05-28 19:05:01.272080] Running '/home/solution/njvm/njvm /home/tests/test03/test03.bin'.
+[2024-05-28 19:05:01.400502] Outputs match.
+[2024-05-28 19:05:01.400527] Test passed.
+[2024-05-28 19:05:01.400538] Running Score: 4/4
+
+[2024-05-28 19:05:01.400558] Evaluating test04 with the submitted solution.
+[2024-05-28 19:05:01.401513] Running '/home/solution/njvm/njvm /home/tests/test04/test04.bin'.
+[2024-05-28 19:05:01.532369] Outputs match.
+[2024-05-28 19:05:01.532393] Test passed.
+[2024-05-28 19:05:01.532405] Running Score: 5/5
+
+[2024-05-28 19:05:01.532422] Evaluating test05 with the submitted solution.
+[2024-05-28 19:05:01.533280] Running '/home/solution/njvm/njvm /home/tests/test05/test05.bin'.
+[2024-05-28 19:05:01.672604] Outputs match.
+[2024-05-28 19:05:01.672632] Test passed.
+[2024-05-28 19:05:01.672650] Running Score: 6/6
+
+[2024-05-28 19:05:01.672673] Evaluating test06 with the submitted solution.
+[2024-05-28 19:05:01.673711] Running '/home/solution/njvm/njvm /home/tests/test06/test06.bin'.
+[2024-05-28 19:05:01.796598] Outputs differ. 'diff'-log (Expected output first, Limited to 50 lines/10000 characters):
+3,5c3,5
+< -2
+< -2
+< 2
+---
+> 0
+> 21474834
+> 0
+[2024-05-28 19:05:01.796640] Test not passed.
+[2024-05-28 19:05:01.796655] Running Score: 6/7
+
+[2024-05-28 19:05:01.796675] Evaluating test07 with the submitted solution.
+[2024-05-28 19:05:01.797665] Running '/home/solution/njvm/njvm /home/tests/test07/test07.bin'.
+[2024-05-28 19:05:01.933011] Outputs differ. 'diff'-log (Expected output first, Limited to 50 lines/10000 characters):
+3,5c3,5
+< 32
+< -32
+< -32
+---
+> 432
+> 64
+> -432
+[2024-05-28 19:05:01.933046] Test not passed.
+[2024-05-28 19:05:01.933061] Running Score: 6/8
+
+[2024-05-28 19:05:01.933080] Evaluating test08 with the submitted solution.
+[2024-05-28 19:05:01.934106] Running '/home/solution/njvm/njvm /home/tests/test08/test08.bin'.
+[2024-05-28 19:05:02.070894] Outputs match.
+[2024-05-28 19:05:02.070922] Test passed.
+[2024-05-28 19:05:02.070931] Running Score: 7/9
+
+[2024-05-28 19:05:02.070949] Evaluating test09 with the submitted solution.
+[2024-05-28 19:05:02.071795] Running '/home/solution/njvm/njvm /home/tests/test09/test09.bin'.
+[2024-05-28 19:05:02.213201] Outputs match.
+[2024-05-28 19:05:02.213225] Test passed.
+[2024-05-28 19:05:02.213237] Running Score: 8/10
+
+[2024-05-28 19:05:02.213255] Evaluating test10 with the submitted solution.
+[2024-05-28 19:05:02.214252] Running '/home/solution/njvm/njvm /home/tests/test10/test10.bin'.
+[2024-05-28 19:05:02.341425] Outputs match.
+[2024-05-28 19:05:02.341448] Test passed.
+[2024-05-28 19:05:02.341461] Running Score: 9/11
+
+[2024-05-28 19:05:02.341481] Evaluating test11 with the submitted solution.
+[2024-05-28 19:05:02.342414] Running '/home/solution/njvm/njvm /home/tests/test11/test11.bin'.
+[2024-05-28 19:05:02.470230] Outputs match.
+[2024-05-28 19:05:02.470254] Test passed.
+[2024-05-28 19:05:02.470266] Running Score: 10/12
+
+[2024-05-28 19:05:02.470283] Evaluating test12 with the submitted solution.
+[2024-05-28 19:05:02.471115] Running '/home/solution/njvm/njvm /home/tests/test12/test12.bin'.
+[2024-05-28 19:05:02.603865] Outputs match.
+[2024-05-28 19:05:02.603898] Test passed.
+[2024-05-28 19:05:02.603916] Running Score: 11/13
+
+[2024-05-28 19:05:02.603943] Evaluating test13 with the submitted solution.
+[2024-05-28 19:05:02.605303] Running '/home/solution/njvm/njvm /home/tests/test13/test13.bin'.
+[2024-05-28 19:05:02.728162] Outputs match.
+[2024-05-28 19:05:02.728200] Test passed.
+[2024-05-28 19:05:02.728216] Running Score: 12/14
+
+[2024-05-28 19:05:02.728243] Evaluating test14 with the submitted solution.
+[2024-05-28 19:05:02.729535] Running '/home/solution/njvm/njvm /home/tests/test14/test14.bin'.
+[2024-05-28 19:05:02.860549] Outputs match.
+[2024-05-28 19:05:02.860576] Test passed.
+[2024-05-28 19:05:02.860591] Running Score: 13/15
+
+[2024-05-28 19:05:02.860613] Evaluating test15 with the submitted solution.
+[2024-05-28 19:05:02.861514] Running '/home/solution/njvm/njvm /home/tests/test15/test15.bin'.
+[2024-05-28 19:05:02.991462] Outputs match.
+[2024-05-28 19:05:02.991487] Test passed.
+[2024-05-28 19:05:02.991498] Running Score: 14/16
+
+[2024-05-28 19:05:02.991516] Evaluating test16 with the submitted solution.
+[2024-05-28 19:05:02.992435] Running '/home/solution/njvm/njvm /home/tests/test16/test16.bin'.
+[2024-05-28 19:05:03.126028] Outputs match.
+[2024-05-28 19:05:03.126050] Test passed.
+[2024-05-28 19:05:03.126064] Running Score: 15/17
+
+[2024-05-28 19:05:03.126088] Evaluating test17 with the submitted solution.
+[2024-05-28 19:05:03.126960] Running '/home/solution/njvm/njvm /home/tests/test17/test17.bin'.
+[2024-05-28 19:05:03.257454] Outputs match.
+[2024-05-28 19:05:03.257479] Test passed.
+[2024-05-28 19:05:03.257495] Running Score: 16/18
+
+[2024-05-28 19:05:03.257511] Evaluating test18 with the submitted solution.
+[2024-05-28 19:05:03.258404] Running '/home/solution/njvm/njvm /home/tests/test18/test18.bin'.
+[2024-05-28 19:05:03.386482] Outputs match.
+[2024-05-28 19:05:03.386518] Test passed.
+[2024-05-28 19:05:03.386531] Running Score: 17/19
+
+[2024-05-28 19:05:03.386549] Evaluating test19 with the submitted solution.
+[2024-05-28 19:05:03.387441] Running '/home/solution/njvm/njvm /home/tests/test19/test19.bin'.
+[2024-05-28 19:05:03.536583] Outputs match.
+[2024-05-28 19:05:03.536606] Test passed.
+[2024-05-28 19:05:03.536617] Running Score: 18/20
+
+[2024-05-28 19:05:03.536648] Final score: 18/20 (90%). 
+[2024-05-28 19:05:03.536814] 50% are needed to pass.
+[2024-05-28 19:05:03.790515] You have PASSED this assignment.
+
