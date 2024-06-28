@@ -1,0 +1,4 @@
+#!/bin/bash
+for filename in /home/aafn/KSP/bin/*.asm; do ./nja filename filename.bin; done
+for filename in /home/aafn/KSP/bin/*.bin; do echo filename & ./Aufgabe5 filename; done
+for filename in /home/aafn/KSP/bin/*.bin; do rm filename; done
