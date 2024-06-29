@@ -1,0 +1,15 @@
+#!/bin/bash
+gcc -g -Wall -std=c99 -pedantic -o Aufgaben/Aufgabe5 Aufgaben/Aufgabe5.c
+for filename in bin/*.asm; do
+    ./nja "${filename}" "${filename}.bin" &
+done
+wait  # Warte, bis alle 'nja'-Prozesse abgeschlossen sind
+
+for filename in bin/*.bin; do
+    echo "${filename}"
+    ./Aufgaben/Aufgabe5 "${filename}"  # Entferne die zusätzliche Klammer
+done
+
+for filename in bin/*.bin; do
+    rm "${filename}"
+done

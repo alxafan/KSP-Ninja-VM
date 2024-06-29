@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #define intValue(s) (*(int*)(s.u.objRef->data))
 #define charValue(s) (*(char*)(s.u.objRef->data))
@@ -150,43 +151,43 @@ void execute(unsigned int IR) {
     case 17:    // EQ
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) == intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) == intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 18:    // NE
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) != intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) != intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 19:    // LT
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) < intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) < intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 20:    // LE
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) <= intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) <= intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 21:    // GT
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) > intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) > intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 22:    // GE
         sp--;
         stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) >= intValue(stack[sp])) intValue(stack[sp-1]) = 1;
-        else intValue(stack[sp-1]) = 0;
+        if (intValue(stack[sp-1]) >= intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
+        else stack[sp-1].u.objRef = createInt(0);
         clearStackSlot(&stack[sp]);
         break;
     case 23:    // JMP
@@ -333,6 +334,35 @@ void printInstruction(unsigned int IR) {
     printf("\n");
 }
 
+// Helper function to print a message with a border around it for the debugger
+void printWithBorder(const char *format, ...) {
+    char buffer[256];
+    va_list args;
+
+    // Start variadic argument list
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    int length = strlen(buffer);
+    int borderLength = length + 20; // 10 spaces padding on each side
+
+    // Upper Border
+    for (int i = 0; i < borderLength; i++) {
+        printf("*");
+    }
+    printf("\n");
+
+    // Message
+    printf("*     %s     *\n", buffer);
+
+    // Lower Border
+    for (int i = 0; i < borderLength; i++) {
+        printf("*");
+    }
+    printf("\n");
+}
+
 void initializeProgram(char prog[]) {
     int fileVersion;
     
@@ -383,7 +413,15 @@ void initializeProgram(char prog[]) {
     }
 
     // initialize the Static Data Area
-    sda = (ObjRef*) malloc(staticsCount * sizeof(ObjRef*));
+    sda = (ObjRef*) malloc(staticsCount * sizeof(ObjRef));
+
+    if (sda == NULL) {
+        printf("memory could not be allocated\n");
+        exit(-1);
+    }
+
+    // set all static data area entries to NULL, so that debugger can check if they are empty
+    for (int i = 0; i < staticsCount; i++) sda[i] = NULL;
 
     // initialize the program code and read from file
     pcode = (unsigned int *) malloc(instrCount * 4);
@@ -401,7 +439,7 @@ void initializeProgram(char prog[]) {
     fclose(fp);
 
     printf("Ninja Virtual Machine started\n");
-} 
+}
 
 int main(int argc, char *argv[]) {
     unsigned int IR;
@@ -437,15 +475,17 @@ int main(int argc, char *argv[]) {
 
                 if (strcmp(command, "stack") == 0) {
                     for (int i = 0; i < sp; i++) {
-                        printf("%d\n", stack[i].u.number);
+                        if (stack[i].isObjRef == 1) printWithBorder("Object: %d, value: %d", stack[i].u.objRef, intValue(stack[i]));
+                        else printWithBorder("%d\n", stack[i].u.number);
                     }
                 }
                 else if (strcmp(command, "pointer") == 0) {
-                    printf("sp: %d\npc: %d\nfp: %d\nrvr: %d\n", sp, pc, fp, rvr);
+                    printWithBorder("sp: %d\npc: %d\nfp: %d\nrvr: %d\n", sp, pc, fp, rvr);
                 }
                 else if (strcmp(command, "static") == 0) {
                     for (int i = 0; i < staticsCount; i++) {
-                        printf("%d\n",*sda[i]->data);
+                        if (sda[i] == NULL) printWithBorder("%d: Empty", i);
+                        else printWithBorder("Object: %d, value: %d", sda[i], *(int*)sda[i]->data);   
                     }
                 }
                 else if (strcmp(command, "program") == 0) {
