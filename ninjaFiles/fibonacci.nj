@@ -1,0 +1,33 @@
+//
+// compute the fib of a number iteratively
+//
+
+void main() {
+  local Integer a;
+  local Integer b;
+  local Integer n;
+  local Integer i;
+  local Integer tmp;
+  a = 1;
+  b = 1;
+  n = readInteger();
+  i = 2;
+  while (i < n) {
+    tmp = a + b;
+    a = b;
+    b = tmp;
+    i = i + 1;
+  } 
+  writeCharacter('F');
+  writeCharacter('i');
+  writeCharacter('b');
+  writeCharacter('(');
+  writeInteger(n);
+  writeCharacter(')');
+  writeCharacter(' ');
+  writeCharacter('=');
+  writeCharacter(' ');
+  writeInteger(b);
+  writeCharacter('\n');
+}
+

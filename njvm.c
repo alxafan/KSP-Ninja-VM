@@ -183,6 +183,7 @@ void execute(unsigned int IR) {
         break;
     case 16:    // POPL
         sp--;
+        stack[fp + SIGN_EXTEND(IMMEDIATE(IR))].isObjRef = 1;
         stack[fp + SIGN_EXTEND(IMMEDIATE(IR))].u.objRef = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
         break;
@@ -233,7 +234,7 @@ void execute(unsigned int IR) {
         clearStackSlot(&stack[sp]);
         clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() > 1) stack[sp-1].u.number = 1;
+        if (bigCmp() > 0) stack[sp-1].u.number = 1;
         else stack[sp-1].u.number = 0;
         break;
     case 22:    // GE
@@ -243,7 +244,7 @@ void execute(unsigned int IR) {
         clearStackSlot(&stack[sp]);
         clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() >= 1 || bigSgn() == 0) stack[sp-1].u.number = 1;
+        if (bigCmp() >= 0) stack[sp-1].u.number = 1;
         else stack[sp-1].u.number = 0;
         break;
     case 23:    // JMP
@@ -516,7 +517,9 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     
-    // debugger fundamentally broken bip gets changed around, but not returned to original state
+    // debugger broken: bip gets changed around, but not returned to original state
+    // maybe use a copy of bip
+    //TODO: fix this and complete a,b,c
 
     if (debug == 1) {
         int cmdAccepted = 0;
@@ -537,17 +540,16 @@ int main(int argc, char *argv[]) {
                         if (stack[i].isObjRef == 1) {
                             bip.op1 = stack[i].u.objRef;
                             printf("Object: %d, value:", stack[i].u.objRef);
-                            bigPrint(stdout);
+                            bigDump(stdout, stack[i].u.objRef);
                             printf("\n");
                         }
                         else printf("%d\n", stack[i].u.number);
                     }
                 }
                 else if (strcmp(command, "pointer") == 0) {
-                    printf("sp: %d\npc: %d\nfp: %d\nrvr:\n", sp, pc, fp);
+                    printf("sp: %d\npc: %d\nfp: %d\nrvr:", sp, pc, fp);
                     if (rvr != NULL) {
-                        bip.op1 = rvr;
-                        bigPrint(stdout);
+                        bigDump(stdout, rvr);
                         printf("\n");
                     }
                     else printf("NULL\n");
@@ -556,8 +558,7 @@ int main(int argc, char *argv[]) {
                     for (int i = 0; i < staticsCount; i++) {
                         if (sda[i] == NULL) printf("%d: Empty\n", i);
                         else printf("Object: %d, value:", sda[i]);
-                        bip.op1 = sda[i];
-                        bigPrint(stdout);
+                        bigDump(stdout, sda[i]);
                         printf("\n");
                     }
                 }
@@ -580,7 +581,7 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 else if (strcmp(command, "help") == 0){
-                    printf("stack, static, program, next, eof, exit\n");
+                    printf("stack, pointer, static, program, next, eof, exit\n");
                 }
                 else if (strcmp(command, "exit") == 0){
                     halt = 1;
