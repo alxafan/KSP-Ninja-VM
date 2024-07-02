@@ -13,6 +13,13 @@
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))  // 0x00800000 enstpricht einer 1 beim 24. Bit    Muss bei negativen Zahlen durchgeführt werden, damit bei Berechnungen das Vorzeichen beachtet wird, sonst wird es als positive Zahl betrachtet
 #define STACK_SIZE 10000
 
+#define MSB         (1 << (8 * sizeof(unsigned int) - 1))
+#define IS_PRIM     (objRef) (((objRef)->size & MSB) == 0)
+
+#define GET_SIZE(objRef) ((objRef)->size & ~MSB)
+
+#define GET_REFS(objRef) ((ObjRef*)(objRef)->data)
+
 int version = 5;
 
 typedef struct {
@@ -42,7 +49,7 @@ int halt = 0;
 int sp = 0;
 int pc = 0;
 int fp = 0;
-ObjRef rvr;
+ObjRef rvr = NULL;
 
 
 /*
@@ -83,8 +90,27 @@ void * getPrimObjectDataPointer(void * obj){
     return oo->data;
 }
 
+ObjRef newCompoundObject(int numOfRefs) {
+    ObjRef compound;
+
+    compound = malloc(sizeof(unsigned int) +
+                    numOfRefs * sizeof(unsigned int));
+    if (compound == NULL) {
+    fatalError("newCompoundObject got no memory");
+    }
+    bigObjRef->size = numOfRefs | MSB;
+    for (int i = 0; i < numOfRefs; i++) {
+        GET_REFS(compound)[i] = NULL;
+    }
+    return compound;
+}
+
 void clearStackSlot(StackSlot *slot) {
     memset(slot, 0, sizeof(StackSlot));
+}
+
+void checkIfObject(StackSlot *slot) {
+    if (slot.isObjRef == 0) fatalError("Object reference expected");
 }
 
 void execute(unsigned int IR) {
@@ -169,6 +195,7 @@ void execute(unsigned int IR) {
         break;
     case 13:    // ASF
         stack[sp++].u.number = fp;
+        for (int i = 0; i < SIGN_EXTEND(IMMEDIATE(IR)); i++) stack[sp+i] = NULL;
         fp = sp;
         sp = sp + SIGN_EXTEND(IMMEDIATE(IR));
         break;
@@ -286,6 +313,76 @@ void execute(unsigned int IR) {
         *stack[sp].u.objRef = *stack[sp-1].u.objRef;
         sp++;
         break;
+    case 32:    // NEW
+
+
+        //
+        // TODO: CONSIDER UTILIZING IS_PRIM MORE
+        //
+
+
+        stack[sp].isObjRef = 1;
+        stack[sp].u.objRef = newCompoundObject(SIGN_EXTEND(IMMEDIATE(IR)));
+        sp++;
+        break;
+    case 33:    // GETF
+        //TODO: check for inbounds
+        stack[sp-1] = GET_REFS(stack[sp-1])[SIGN_EXTEND(IMMEDIATE(IR))];
+        break;
+    case 34:    // PUTF
+        GET_REFS(stack[sp-2])[SIGN_EXTEND(IMMEDIATE(IR))].isObjRef = 1; // Indicating that the field is an objRef
+        GET_REFS(stack[sp-2])[SIGN_EXTEND(IMMEDIATE(IR))] = stack[sp-1].u.objRef;
+        clearStackSlot(&stack[--sp]);
+        clearStackSlot(&stack[--sp]);
+        break;
+    case 35:    // NEWA
+        // number_elements is already objRef, so no need to set isObjRef
+        stack[sp-1] = newCompoundObject(bigToInt(stack[sp-1].u.objRef));
+        break;
+    case 36:    // GETFA
+        if (GET_SIZE(stack[sp-2]) < bigToInt(stack[sp-1])) fatalError("Index out of bounds");
+        stack[sp-2] = GET_REFS(stack[sp-2])[bigToInt(stack[sp-1].u.objRef)];
+        clearStackSlot(&stack[--sp]);
+        break;
+    case 37:    // PUTFA
+        if (GET_SIZE(stack[sp-3]) < bigToInt(stack[sp-2])) fatalError("Index out of bounds");
+        GET_REFS(stack[sp-3])[bigToInt(stack[sp-2].u.objRef)].isObjRef = 1; // Indicating that the field is an objRef
+        GET_REFS(stack[sp-3])[bigToInt(stack[sp-2].u.objRef)] = stack[sp-1].u.objRef;
+        clearStackSlot(&stack[--sp]);
+        clearStackSlot(&stack[--sp]);
+        clearStackSlot(&stack[--sp]);
+        break;
+    case 38:    // GETSZ
+    //TODO: Consider making more of these tests for the case that someone writes in assembly?
+        checkIfObject(&stack[sp-1]);
+        if (IS_PRIM(stack[sp-1])) stack[sp-1] = bigFromInt(-1);
+        else stack[sp-1] = bigFromInt(GET_SIZE(stack[sp-1]));
+        break;
+    case 39:    // PUSHN
+        stack[sp++] = NULL;
+        break;
+    case 40:    // REFEQ
+        if (stack[sp-2].u.objRef == stack[sp-1].u.objRef) {
+            stack[sp-2].isObjRef = 0;
+            stack[sp-2].u.number = 1;
+        }
+        else {
+            stack[sp-2].isObjRef = 0;
+            stack[sp-2].u.number = 0;
+        }
+        clearStackSlot(&stack[--sp]);
+        break;
+    case 41:    // REFNE
+        if (stack[sp-2].u.objRef != stack[sp-1].u.objRef) {
+                stack[sp-2].isObjRef = 0;
+                stack[sp-2].u.number = 1;
+            }
+            else {
+                stack[sp-2].isObjRef = 0;
+                stack[sp-2].u.number = 0;
+            }
+            clearStackSlot(&stack[--sp]);
+            break;
     }
 }
 
@@ -478,7 +575,7 @@ void initializeProgram(char prog[]) {
         exit(-1);
     }
 
-    // set all static data area entries to NULL, so that debugger can check if they are empty
+    // set all static data area entries to NULL
     for (int i = 0; i < staticsCount; i++) sda[i] = NULL;
 
     // initialize the program code and read from file
@@ -517,8 +614,6 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     
-    // debugger broken: bip gets changed around, but not returned to original state
-    // maybe use a copy of bip
     //TODO: fix this and complete a,b,c
 
     if (debug == 1) {
