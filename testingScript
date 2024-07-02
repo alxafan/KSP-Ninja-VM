@@ -1,5 +1,5 @@
 #!/bin/bash
-gcc -g -Wall -std=c99 -pedantic -o njvm njvm.c
+gcc -I bigint/build/include -L bigint/build/lib -g -Wall -std=c99 -pedantic -o njvm njvm.c -lbigint
 for filename in prog/*.asm; do
     ./nja "${filename}" "${filename}.bin" &
 done
