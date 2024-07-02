@@ -8,8 +8,7 @@
 #include <support.h>
 #include <bigint.h>
 
-#define intValue(s) (*(int*)(s.u.objRef->data))
-#define charValue(s) (*(char*)(s.u.objRef->data))
+#define intValue(s) (s.u.number)
 #define IMMEDIATE(x) ((x) & 0x00FFFFFF)
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))  // 0x00800000 enstpricht einer 1 beim 24. Bit    Muss bei negativen Zahlen durchgeführt werden, damit bei Berechnungen das Vorzeichen beachtet wird, sonst wird es als positive Zahl betrachtet
 #define STACK_SIZE 10000
@@ -43,29 +42,8 @@ int halt = 0;
 int sp = 0;
 int pc = 0;
 int fp = 0;
-int rvr = 0;
+ObjRef rvr;
 
-ObjRef createInt(int value) {
-    ObjRef obj = (ObjRef) malloc(sizeof(unsigned int) + sizeof(int));
-    if (obj == NULL) {
-        printf("memory could not be allocated\n");
-        exit(-1);
-    }
-    obj->size = sizeof(int);
-    *(int*)obj->data = value;
-    return obj;
-}
-
-ObjRef createChar(char value) {
-    ObjRef obj = (ObjRef) malloc(sizeof(unsigned int) + sizeof(char));
-    if (obj == NULL) {
-        printf("memory could not be allocated\n");
-        exit(-1);
-    }
-    obj->size = sizeof(char);
-    *(char*)obj->data = value;
-    return obj;
-}
 
 /*
  * This routine is called in case a fatal error has occurred.
@@ -75,7 +53,6 @@ void fatalError(char *msg) {
   printf("Fatal error: %s\n", msg);
   exit(1);
 }
-
 
 /*
  * This function is called whenever a new primitive object with
@@ -117,49 +94,67 @@ void execute(unsigned int IR) {
         break;
     case 1:     // PUSHC
         stack[sp].isObjRef = 1;
-        stack[sp++].u.objRef = createInt(SIGN_EXTEND(IMMEDIATE(IR)));
+        bigFromInt(SIGN_EXTEND(IMMEDIATE(IR)));
+        stack[sp++].u.objRef = bip.res;
         break;
     case 2:     // ADD
-        stack[sp-2].u.objRef = createInt(intValue(stack[sp-2]) + intValue(stack[sp-1]));
+        bip.op1 = stack[sp-2].u.objRef;
+        bip.op2 = stack[sp-1].u.objRef;
+        bigAdd();
+        stack[sp-2].u.objRef = bip.res;
         clearStackSlot(&stack[sp-1]);
         sp--;
         break;
     case 3:     // SUB
-        stack[sp-2].u.objRef = createInt(intValue(stack[sp-2]) - intValue(stack[sp-1]));
+        bip.op1 = stack[sp-2].u.objRef;
+        bip.op2 = stack[sp-1].u.objRef;
+        bigSub();
+        stack[sp-2].u.objRef = bip.res;
         clearStackSlot(&stack[sp-1]);
         sp--;
         break;
     case 4:     // MUL
-        stack[sp-2].u.objRef = createInt(intValue(stack[sp-2]) * intValue(stack[sp-1]));
+        bip.op1 = stack[sp-2].u.objRef;
+        bip.op2 = stack[sp-1].u.objRef;
+        bigMul();
+        stack[sp-2].u.objRef = bip.res;
         clearStackSlot(&stack[sp-1]);
         sp--;
         break;
     case 5:     // DIV
-        stack[sp-2].u.objRef = createInt(intValue(stack[sp-2]) / intValue(stack[sp-1]));
+        bip.op1 = stack[sp-2].u.objRef;
+        bip.op2 = stack[sp-1].u.objRef;
+        bigDiv();
+        stack[sp-2].u.objRef = bip.res;
         clearStackSlot(&stack[sp-1]);
         sp--;
         break;
     case 6:     // MOD
-        stack[sp-2].u.objRef = createInt(intValue(stack[sp-2]) % intValue(stack[sp-1]));
+        bip.op1 = stack[sp-2].u.objRef;
+        bip.op2 = stack[sp-1].u.objRef;
+        bigDiv();
+        stack[sp-2].u.objRef = bip.rem;
         clearStackSlot(&stack[sp-1]);
         sp--;
         break;
     case 7:     // RDINT
         stack[sp].isObjRef = 1;
-        stack[sp++].u.objRef = createInt(0);
-        scanf("%d", &intValue(stack[sp-1]));
+        bigRead(stdin);
+        stack[sp++].u.objRef = bip.res;
         break;
     case 8:     // WRINT
-        printf("%d", intValue(stack[--sp]));
+        bip.op1 = stack[--sp].u.objRef;
+        bigPrint(stdout);
         clearStackSlot(&stack[sp]);
         break;
     case 9:     // RDCHR
         stack[sp].isObjRef = 1;
-        stack[sp++].u.objRef = createChar(0);
-        scanf("%c", &charValue(stack[sp-1]));
+        bigRead(stdin);
+        stack[sp++].u.objRef = bip.res;
         break;
     case 10:    // WRCHR
-        printf("%c", charValue(stack[--sp]));
+        bip.op1 = stack[--sp].u.objRef;
+        printf("%c", bigToInt());
         clearStackSlot(&stack[sp]);
         break;
     case 11:    // PUSHG
@@ -193,45 +188,63 @@ void execute(unsigned int IR) {
         break;
     case 17:    // EQ
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) == intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() == 0) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 18:    // NE
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) != intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() != 0) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 19:    // LT
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) < intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() < 0) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 20:    // LE
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) <= intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() <= 0) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 21:    // GT
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) > intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() > 1) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 22:    // GE
         sp--;
-        stack[sp-1].isObjRef = 1;
-        if (intValue(stack[sp-1]) >= intValue(stack[sp])) stack[sp-1].u.objRef = createInt(1);
-        else stack[sp-1].u.objRef = createInt(0);
+        bip.op1 = stack[sp-1].u.objRef;
+        bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
+        clearStackSlot(&stack[sp-1]);
+
+        if (bigCmp() >= 1 || bigSgn() == 0) stack[sp-1].u.number = 1;
+        else stack[sp-1].u.number = 0;
         break;
     case 23:    // JMP
         pc = SIGN_EXTEND(IMMEDIATE(IR));
@@ -261,10 +274,10 @@ void execute(unsigned int IR) {
         break;
     case 29:    // PUSHR
         stack[sp].isObjRef = 1;
-        stack[sp++].u.objRef = createInt(rvr);
+        stack[sp++].u.objRef = rvr;
         break;
     case 30:    // POPR
-        rvr = intValue(stack[--sp]);
+        rvr = stack[--sp].u.objRef;
         clearStackSlot(&stack[sp]);
         break;
     case 31:    // DUP
@@ -378,6 +391,7 @@ void printInstruction(unsigned int IR) {
 }
 
 // Helper function to print a message with a border around it for the debugger
+// Currently not used
 void printWithBorder(const char *format, ...) {
     char buffer[256];
     va_list args;
@@ -502,6 +516,8 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     
+    // debugger fundamentally broken bip gets changed around, but not returned to original state
+
     if (debug == 1) {
         int cmdAccepted = 0;
         char command[255];
@@ -518,17 +534,31 @@ int main(int argc, char *argv[]) {
 
                 if (strcmp(command, "stack") == 0) {
                     for (int i = 0; i < sp; i++) {
-                        if (stack[i].isObjRef == 1) printWithBorder("Object: %d, value: %d", stack[i].u.objRef, intValue(stack[i]));
-                        else printWithBorder("%d\n", stack[i].u.number);
+                        if (stack[i].isObjRef == 1) {
+                            bip.op1 = stack[i].u.objRef;
+                            printf("Object: %d, value:", stack[i].u.objRef);
+                            bigPrint(stdout);
+                            printf("\n");
+                        }
+                        else printf("%d\n", stack[i].u.number);
                     }
                 }
                 else if (strcmp(command, "pointer") == 0) {
-                    printWithBorder("sp: %d\npc: %d\nfp: %d\nrvr: %d\n", sp, pc, fp, rvr);
+                    printf("sp: %d\npc: %d\nfp: %d\nrvr:\n", sp, pc, fp);
+                    if (rvr != NULL) {
+                        bip.op1 = rvr;
+                        bigPrint(stdout);
+                        printf("\n");
+                    }
+                    else printf("NULL\n");
                 }
                 else if (strcmp(command, "static") == 0) {
                     for (int i = 0; i < staticsCount; i++) {
-                        if (sda[i] == NULL) printWithBorder("%d: Empty", i);
-                        else printWithBorder("Object: %d, value: %d", sda[i], *(int*)sda[i]->data);   
+                        if (sda[i] == NULL) printf("%d: Empty\n", i);
+                        else printf("Object: %d, value:", sda[i]);
+                        bip.op1 = sda[i];
+                        bigPrint(stdout);
+                        printf("\n");
                     }
                 }
                 else if (strcmp(command, "program") == 0) {
