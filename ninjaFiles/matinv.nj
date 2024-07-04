@@ -1,0 +1,146 @@
+//
+// matinv.nj -- invert 2x2 matrices of fractions
+//
+
+//--------------------------------------------------------------
+
+// greatest common divisor
+
+Integer gcd(Integer a, Integer b) {
+  local Integer h;
+  while (b != 0) {
+    h = a % b;
+    a = b;
+    b = h;
+  }
+  return a;
+}
+
+//--------------------------------------------------------------
+
+// fractions
+
+type Fraction = record {
+  Integer num;
+  Integer den;
+};
+
+Fraction newFraction(Integer num, Integer den) {
+  local Integer n;
+  local Integer d;
+  local Integer g;
+  local Fraction r;
+  if (num < 0) {
+    n = -num;
+  } else {
+    n = num;
+  }
+  if (den < 0) {
+    d = -den;
+  } else {
+    d = den;
+  }
+  g = gcd(n, d);
+  r = new(Fraction);
+  if ((num < 0) != (den < 0)) {
+    r.num = -n / g;
+  } else {
+    r.num = n / g;
+  }
+  r.den = d / g;
+  return r;
+}
+
+void writeFraction(Fraction f) {
+  writeInteger(f.num);
+  writeString("/");
+  writeInteger(f.den);
+}
+
+Fraction negFraction(Fraction f) {
+  return newFraction(-f.num, f.den);
+}
+
+Fraction addFraction(Fraction f1, Fraction f2) {
+  return newFraction(f1.num * f2.den + f2.num * f1.den, f1.den * f2.den);
+}
+
+Fraction subFraction(Fraction f1, Fraction f2) {
+  return newFraction(f1.num * f2.den - f2.num * f1.den, f1.den * f2.den);
+}
+
+Fraction mulFraction(Fraction f1, Fraction f2) {
+  return newFraction(f1.num * f2.num, f1.den * f2.den);
+}
+
+Fraction divFraction(Fraction f1, Fraction f2) {
+  return newFraction(f1.num * f2.den, f1.den * f2.num);
+}
+
+//--------------------------------------------------------------
+
+// 2x2 matrices of fractions
+
+type Matrix = Fraction[][];
+
+Matrix newMatrix(Fraction a00, Fraction a01,
+                 Fraction a10, Fraction a11) {
+  local Matrix m;
+  m = new(Fraction[2][]);
+  m[0] = new(Fraction[2]);
+  m[1] = new(Fraction[2]);
+  m[0][0] = a00;
+  m[0][1] = a01;
+  m[1][0] = a10;
+  m[1][1] = a11;
+  return m;
+}
+
+void writeMatrix(Matrix m) {
+  local Integer i;
+  local Integer j;
+  i = 0;
+  while (i < sizeof(m)) {
+    j = 0;
+    while (j < sizeof(m[i])) {
+      writeFraction(m[i][j]);
+      writeString("  ");
+      j = j + 1;
+    }
+    writeString("\n");
+    i = i + 1;
+  }
+  writeString("\n");
+}
+
+Matrix invertMatrix(Matrix m) {
+  local Fraction det;
+  det = subFraction(mulFraction(m[0][0], m[1][1]),
+                    mulFraction(m[0][1], m[1][0]));
+  if (det.num == 0) {
+    writeString("error: matrix cannot be inverted\n");
+    exit();
+  }
+  return newMatrix(
+    divFraction(m[1][1], det), divFraction(negFraction(m[0][1]), det),
+    divFraction(negFraction(m[1][0]), det), divFraction(m[0][0], det)
+  );
+}
+
+//--------------------------------------------------------------
+
+void main() {
+  local Matrix matrix;
+  local Matrix result1;
+  local Matrix result2;
+  writeString("\n");
+  matrix = newMatrix(
+    newFraction(7, 1), newFraction(4, 1),
+    newFraction(6, 1), newFraction(5, 1)
+  );
+  writeMatrix(matrix);
+  result1 = invertMatrix(matrix);
+  writeMatrix(result1);
+  result2 = invertMatrix(result1);
+  writeMatrix(result2);
+}

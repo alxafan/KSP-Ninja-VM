@@ -14,13 +14,13 @@
 #define STACK_SIZE 10000
 
 #define MSB         (1 << (8 * sizeof(unsigned int) - 1))
-#define IS_PRIM     (objRef) (((objRef)->size & MSB) == 0)
+#define IS_PRIM(objRef) (((objRef)->size & MSB) == 0)
 
 #define GET_SIZE(objRef) ((objRef)->size & ~MSB)
 
 #define GET_REFS(objRef) ((ObjRef*)(objRef)->data)
 
-int version = 5;
+int version = 7;
 
 typedef struct {
   unsigned int size;    /* byte count of payload data */
@@ -93,12 +93,11 @@ void * getPrimObjectDataPointer(void * obj){
 ObjRef newCompoundObject(int numOfRefs) {
     ObjRef compound;
 
-    compound = malloc(sizeof(unsigned int) +
-                    numOfRefs * sizeof(unsigned int));
+    compound = malloc(sizeof(unsigned int) + numOfRefs * sizeof(ObjRef*));
     if (compound == NULL) {
     fatalError("newCompoundObject got no memory");
     }
-    bigObjRef->size = numOfRefs | MSB;
+    compound->size = numOfRefs | MSB;
     for (int i = 0; i < numOfRefs; i++) {
         GET_REFS(compound)[i] = NULL;
     }
@@ -110,7 +109,7 @@ void clearStackSlot(StackSlot *slot) {
 }
 
 void checkIfObject(StackSlot *slot) {
-    if (slot.isObjRef == 0) fatalError("Object reference expected");
+    if (slot->isObjRef == 0) fatalError("Object reference expected");
 }
 
 void execute(unsigned int IR) {
@@ -194,8 +193,9 @@ void execute(unsigned int IR) {
         clearStackSlot(&stack[sp]);
         break;
     case 13:    // ASF
+        stack[sp].isObjRef = 0;
         stack[sp++].u.number = fp;
-        for (int i = 0; i < SIGN_EXTEND(IMMEDIATE(IR)); i++) stack[sp+i] = NULL;
+        for (int i = 0; i < SIGN_EXTEND(IMMEDIATE(IR)); i++) stack[sp+i].u.objRef = NULL;
         fp = sp;
         sp = sp + SIGN_EXTEND(IMMEDIATE(IR));
         break;
@@ -209,6 +209,7 @@ void execute(unsigned int IR) {
         sp++;
         break;
     case 16:    // POPL
+        // broken????
         sp--;
         stack[fp + SIGN_EXTEND(IMMEDIATE(IR))].isObjRef = 1;
         stack[fp + SIGN_EXTEND(IMMEDIATE(IR))].u.objRef = stack[sp].u.objRef;
@@ -219,72 +220,74 @@ void execute(unsigned int IR) {
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() == 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() == 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 18:    // NE
         sp--;
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() != 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() != 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 19:    // LT
         sp--;
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() < 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() < 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 20:    // LE
         sp--;
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() <= 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() <= 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 21:    // GT
         sp--;
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() > 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() > 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 22:    // GE
         sp--;
         bip.op1 = stack[sp-1].u.objRef;
         bip.op2 = stack[sp].u.objRef;
         clearStackSlot(&stack[sp]);
-        clearStackSlot(&stack[sp-1]);
 
-        if (bigCmp() >= 0) stack[sp-1].u.number = 1;
-        else stack[sp-1].u.number = 0;
+        if (bigCmp() >= 0) bigFromInt(1);
+        else bigFromInt(0);
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 23:    // JMP
         pc = SIGN_EXTEND(IMMEDIATE(IR));
         break;
     case 24:    // BRF
         sp--;
-        if (intValue(stack[sp]) == 0) pc = SIGN_EXTEND(IMMEDIATE(IR));
+        bip.op1 = stack[sp].u.objRef;
+        if (bigToInt() == 0) pc = SIGN_EXTEND(IMMEDIATE(IR));
         clearStackSlot(&stack[sp]);
         break;
     case 25:    // BRT
         sp--;
-        if (intValue(stack[sp]) == 1) pc = SIGN_EXTEND(IMMEDIATE(IR));
+        bip.op1 = stack[sp].u.objRef;
+        if (bigToInt() == 1) pc = SIGN_EXTEND(IMMEDIATE(IR));
         clearStackSlot(&stack[sp]);
         break;
     case 26:    // CALL
@@ -298,7 +301,7 @@ void execute(unsigned int IR) {
         clearStackSlot(&stack[sp]);
         break;
     case 28:    // DROP
-        for (int i = 0; i < SIGN_EXTEND(IMMEDIATE(IR)); i++) clearStackSlot(&stack[sp--]);
+        for (int i = 0; i < SIGN_EXTEND(IMMEDIATE(IR)); i++) clearStackSlot(&stack[--sp]);
         break;
     case 29:    // PUSHR
         stack[sp].isObjRef = 1;
@@ -310,7 +313,7 @@ void execute(unsigned int IR) {
         break;
     case 31:    // DUP
         stack[sp].isObjRef = 1;
-        *stack[sp].u.objRef = *stack[sp-1].u.objRef;
+        stack[sp].u.objRef = stack[sp-1].u.objRef;
         sp++;
         break;
     case 32:    // NEW
@@ -327,27 +330,30 @@ void execute(unsigned int IR) {
         break;
     case 33:    // GETF
         //TODO: check for inbounds
-        stack[sp-1] = GET_REFS(stack[sp-1])[SIGN_EXTEND(IMMEDIATE(IR))];
+        stack[sp-1].u.objRef = GET_REFS(stack[sp-1].u.objRef)[SIGN_EXTEND(IMMEDIATE(IR))];
         break;
     case 34:    // PUTF
-        GET_REFS(stack[sp-2])[SIGN_EXTEND(IMMEDIATE(IR))].isObjRef = 1; // Indicating that the field is an objRef
-        GET_REFS(stack[sp-2])[SIGN_EXTEND(IMMEDIATE(IR))] = stack[sp-1].u.objRef;
+        GET_REFS(stack[sp-2].u.objRef)[SIGN_EXTEND(IMMEDIATE(IR))] = stack[sp-1].u.objRef;
         clearStackSlot(&stack[--sp]);
         clearStackSlot(&stack[--sp]);
         break;
     case 35:    // NEWA
         // number_elements is already objRef, so no need to set isObjRef
-        stack[sp-1] = newCompoundObject(bigToInt(stack[sp-1].u.objRef));
+        bip.op1 = stack[sp-1].u.objRef;
+        stack[sp-1].u.objRef = newCompoundObject(bigToInt());
         break;
     case 36:    // GETFA
-        if (GET_SIZE(stack[sp-2]) < bigToInt(stack[sp-1])) fatalError("Index out of bounds");
-        stack[sp-2] = GET_REFS(stack[sp-2])[bigToInt(stack[sp-1].u.objRef)];
+        bip.op1 = stack[sp-1].u.objRef;
+        if (GET_SIZE(stack[sp-2].u.objRef) < bigToInt()) fatalError("Index out of bounds");
+        bip.op1 = stack[sp-1].u.objRef;
+        stack[sp-2].u.objRef = GET_REFS(stack[sp-2].u.objRef)[bigToInt()];
         clearStackSlot(&stack[--sp]);
         break;
     case 37:    // PUTFA
-        if (GET_SIZE(stack[sp-3]) < bigToInt(stack[sp-2])) fatalError("Index out of bounds");
-        GET_REFS(stack[sp-3])[bigToInt(stack[sp-2].u.objRef)].isObjRef = 1; // Indicating that the field is an objRef
-        GET_REFS(stack[sp-3])[bigToInt(stack[sp-2].u.objRef)] = stack[sp-1].u.objRef;
+        bip.op1 = stack[sp-2].u.objRef;
+        if (GET_SIZE(stack[sp-3].u.objRef) < bigToInt()) fatalError("Index out of bounds");
+        bip.op1 = stack[sp-2].u.objRef;
+        GET_REFS(stack[sp-3].u.objRef)[bigToInt()] = stack[sp-1].u.objRef;
         clearStackSlot(&stack[--sp]);
         clearStackSlot(&stack[--sp]);
         clearStackSlot(&stack[--sp]);
@@ -355,34 +361,36 @@ void execute(unsigned int IR) {
     case 38:    // GETSZ
     //TODO: Consider making more of these tests for the case that someone writes in assembly?
         checkIfObject(&stack[sp-1]);
-        if (IS_PRIM(stack[sp-1])) stack[sp-1] = bigFromInt(-1);
-        else stack[sp-1] = bigFromInt(GET_SIZE(stack[sp-1]));
+        if (IS_PRIM(stack[sp-1].u.objRef)) {
+            bigFromInt(-1);
+        }
+        else {
+            bigFromInt(GET_SIZE(stack[sp-1].u.objRef));
+        }
+        stack[sp-1].u.objRef = bip.res;
         break;
     case 39:    // PUSHN
-        stack[sp++] = NULL;
+        stack[sp].isObjRef = 1;
+        stack[sp++].u.objRef = NULL;
         break;
     case 40:    // REFEQ
         if (stack[sp-2].u.objRef == stack[sp-1].u.objRef) {
-            stack[sp-2].isObjRef = 0;
-            stack[sp-2].u.number = 1;
+            bigFromInt(1);
+        } else {
+            bigFromInt(0);
         }
-        else {
-            stack[sp-2].isObjRef = 0;
-            stack[sp-2].u.number = 0;
-        }
+        stack[sp-2].u.objRef = bip.res;
         clearStackSlot(&stack[--sp]);
         break;
     case 41:    // REFNE
         if (stack[sp-2].u.objRef != stack[sp-1].u.objRef) {
-                stack[sp-2].isObjRef = 0;
-                stack[sp-2].u.number = 1;
-            }
-            else {
-                stack[sp-2].isObjRef = 0;
-                stack[sp-2].u.number = 0;
-            }
-            clearStackSlot(&stack[--sp]);
-            break;
+            bigFromInt(1);
+        } else {
+            bigFromInt(0);
+        }
+        stack[sp-2].u.objRef = bip.res;
+        clearStackSlot(&stack[--sp]);
+        break;
     }
 }
 
@@ -437,7 +445,7 @@ void printInstruction(unsigned int IR) {
         printf("pushl\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
         break;
     case 16:
-        printf("popl");
+        printf("popl\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
         break;
     case 17:
         printf("eq");
@@ -483,6 +491,36 @@ void printInstruction(unsigned int IR) {
         break;
     case 31:
         printf("dup");
+        break;
+    case 32:
+        printf("new\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 33:
+        printf("getf\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 34:
+        printf("putf\t%d", SIGN_EXTEND(IMMEDIATE(IR)));
+        break;
+    case 35:
+        printf("newa");
+        break;
+    case 36:
+        printf("getfa");
+        break;
+    case 37:
+        printf("putfa");
+        break;
+    case 38:
+        printf("getsz");
+        break;
+    case 39:
+        printf("pushn");
+        break;
+    case 40:
+        printf("refeq");
+        break;
+    case 41:
+        printf("refne");
         break;
     }
     printf("\n");
@@ -614,7 +652,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
     
-    //TODO: fix this and complete a,b,c
+    //TODO: fix printing of bigints 
 
     if (debug == 1) {
         int cmdAccepted = 0;
@@ -630,16 +668,20 @@ int main(int argc, char *argv[]) {
                 cmdAccepted = 1;
                 scanf("%s", command);
 
-                if (strcmp(command, "stack") == 0) {
+                if (strcmp(command, "stack") == 0) {    // very jankey, but not a lot of effort for almost full functionality, maybe improve debugger later
                     for (int i = 0; i < sp; i++) {
-                        if (stack[i].isObjRef == 1) {
-                            bip.op1 = stack[i].u.objRef;
-                            printf("Object: %d, value:", stack[i].u.objRef);
-                            bigDump(stdout, stack[i].u.objRef);
-                            printf("\n");
-                        }
-                        else printf("%d\n", stack[i].u.number);
-                    }
+                            if (stack[i].isObjRef == 1) {
+                                if (stack[i].u.objRef == NULL) printf("NULL\n");
+                                else {
+                                    if (IS_PRIM(stack[i].u.objRef)) {
+                                        printf("Object: %p, value:", (void *) stack[i].u.objRef);
+                                        bigDump(stdout, stack[i].u.objRef);
+                                        printf("\n");
+                                    } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                                }
+                            }
+                            else printf("%d\n", stack[i].u.number);
+                      }
                 }
                 else if (strcmp(command, "pointer") == 0) {
                     printf("sp: %d\npc: %d\nfp: %d\nrvr:", sp, pc, fp);
@@ -652,7 +694,7 @@ int main(int argc, char *argv[]) {
                 else if (strcmp(command, "static") == 0) {
                     for (int i = 0; i < staticsCount; i++) {
                         if (sda[i] == NULL) printf("%d: Empty\n", i);
-                        else printf("Object: %d, value:", sda[i]);
+                        else printf("Object: %p, value:", (void *) sda[i]);
                         bigDump(stdout, sda[i]);
                         printf("\n");
                     }
@@ -668,11 +710,27 @@ int main(int argc, char *argv[]) {
                     pc = pc+1;
                     execute(IR);
                 }
-                else if (strcmp(command, "eof") == 0){
+                else if (strcmp(command, "eof") == 0){  // copied printing from "stack"
                     while(!halt) {
                         IR = (unsigned int) *(pcode + pc);
                         pc = pc+1;
-                        execute(IR);
+                        printf("--------------------\n");
+                        printInstruction(IR);
+                        printf("--------------------\n");
+                        for (int i = 0; i < sp; i++) {
+                            if (stack[i].isObjRef == 1) {
+                                if (stack[i].u.objRef == NULL) printf("NULL\n");
+                                else {
+                                    if (IS_PRIM(stack[i].u.objRef)) {
+                                        printf("Object: %p, value:", (void *) stack[i].u.objRef);
+                                        bigDump(stdout, stack[i].u.objRef);
+                                        printf("\n");
+                                    } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                                }
+                            }
+                            else printf("%d\n", stack[i].u.number);
+                      }
+                       execute(IR);
                     }
                 }
                 else if (strcmp(command, "help") == 0){

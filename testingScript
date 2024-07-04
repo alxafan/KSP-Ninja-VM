@@ -1,13 +1,13 @@
 #!/bin/bash
 gcc -I bigint/build/include -L bigint/build/lib -g -Wall -std=c99 -pedantic -o njvm njvm.c -lbigint
 for filename in prog/*.asm; do
-    ./nja "${filename}" "${filename}.bin" &
+    ./nja "${filename}" "${filename}.bin"
 done
-wait  # Warte, bis alle 'nja'-Prozesse abgeschlossen sind
+wait
 
 for filename in prog/*.bin; do
     echo "${filename}"
-    ./njvm "${filename}"  # Entferne die zusätzliche Klammer
+    ./njvm "${filename}"
 done
 
 for filename in prog/*.bin; do
