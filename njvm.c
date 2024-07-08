@@ -31,6 +31,8 @@ int prune = 0;
 int stats = 0;
 int createdObjCount = 0;
 int createdObjBytes = 0;
+int aliveObjCount = 0;
+int aliveObjBytes = 0;
 
 typedef struct {
   unsigned int size;    /* size of payload data or number of refs */
@@ -82,6 +84,17 @@ void fatalError(char *msg) {
   exit(1);
 }
 
+
+
+
+
+
+// program crashes after a gc run some time after accessing the stack, probably an error during relocation
+
+
+
+
+
 ObjRef copyObjectToFreeMem(ObjRef obj) {
     ObjRef copy;
     if (IS_PRIM(obj)) {
@@ -107,25 +120,25 @@ ObjRef copyObjectToFreeMem(ObjRef obj) {
 }
 
 ObjRef relocate(ObjRef orig) {
-    ObjRef copy;
+    char *copy;
     if(orig == NULL) {
     copy = NULL;    //relocate(nil) = nil
     }
     else if(HAS_BH(orig)) { // Objekt ist bereits kopiert, Forward-Pointer gesetzt
-    copy = (ObjRef) GET_SIZE(orig);
+    copy = GET_SIZE(orig) + trgtMem;
     }
     else { //   Objekt muss noch kopiert werden
-    copy = copyObjectToFreeMem(orig); 
+    copy = (char *) copyObjectToFreeMem(orig); 
     // im Original: setze Broken-Heart-Flag und Forward-Pointer 
-    orig->size = (unsigned int) copy | BH;
+    orig->size = (copy - trgtMem) | BH;
     }
-    return copy;
+    return (ObjRef) copy;
 }
 
 void collectGarbage() {
     char *scan;
-    int aliveObjCount = 0;
-    int aliveObjBytes = 0;
+    aliveObjCount = 0;
+    aliveObjBytes = 0;
 
     // flip trgtMem and srcMem, set freePtr to start of trgtMem. Using scan as tmp variable
     scan = trgtMem;
@@ -155,7 +168,6 @@ void collectGarbage() {
 
     scan = trgtMem;
     while (scan != freePtr){
-        printf("scan: %p\n", (void *) scan);
         /* es gibt noch Objekte, die gescannt werden müssen */
         if (!IS_PRIM((ObjRef) scan)){
             for (int i = 0; i < GET_SIZE((ObjRef) scan); i++) {
@@ -828,16 +840,21 @@ void debugger() {
                     printf("--------------------\n");
                     for (int i = 0; i < sp; i++) {
                         if (stack[i].isObjRef == 1) {
-                            if (stack[i].u.objRef == NULL) printf("NULL\n");
+                            if (stack[i].u.objRef == NULL) {
+                                printf("NULL\n");    
+                            }
                             else {
-                                if (IS_PRIM(stack[i].u.objRef)) {
+                                if (IS_PRIM(stack[i].u.objRef)) {   // this is where the program crashes
                                     printf("Object: %p, value:", (void *) stack[i].u.objRef);
                                     bigDump(stdout, stack[i].u.objRef);
                                     printf("\n");
-                                } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                                } else {
+                                    printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                                }
                             }
+                        } else {
+                            printf("%d\n", stack[i].u.number);
                         }
-                        else printf("%d\n", stack[i].u.number);
                     }
                     execute(IR);
                 }
