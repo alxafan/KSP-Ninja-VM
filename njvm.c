@@ -11,19 +11,29 @@
 #define intValue(s) (s.u.number)
 #define IMMEDIATE(x) ((x) & 0x00FFFFFF)
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))  // 0x00800000 enstpricht einer 1 beim 24. Bit    Muss bei negativen Zahlen durchgeführt werden, damit bei Berechnungen das Vorzeichen beachtet wird, sonst wird es als positive Zahl betrachtet
-#define STACK_SIZE 10000
+#define STACK_SIZE 64
 
 #define MSB         (1 << (8 * sizeof(unsigned int) - 1))
+#define BH         (1 << (8 * sizeof(unsigned int) - 2))
 #define IS_PRIM(objRef) (((objRef)->size & MSB) == 0)
+#define HAS_BH(objRef) (((objRef)->size & BH) != 0)
 
-#define GET_SIZE(objRef) ((objRef)->size & ~MSB)
+#define GET_SIZE(objRef) ((objRef)->size & ~(BH | MSB))
 
 #define GET_REFS(objRef) ((ObjRef*)(objRef)->data)
 
-int version = 7;
+#define CHECK_OVERFLOW(size) ((sizeof(unsigned int) + (size * sizeof(unsigned char)) + freePtr - trgtMem) > (heapSize/2))
+
+unsigned int IR;
+int version = 8;
+int debug = 0;
+int prune = 0;
+int stats = 0;
+int createdObjCount = 0;
+int createdObjBytes = 0;
 
 typedef struct {
-  unsigned int size;    /* byte count of payload data */
+  unsigned int size;    /* size of payload data or number of refs */
   unsigned char data[1]; /* payload data, size as needed */
 }*ObjRef;
 
@@ -36,8 +46,19 @@ typedef struct{
     }u;
 }StackSlot;
 
+int stackSize = 64;
+int heapSize = 64;
 
-StackSlot stack[STACK_SIZE];
+// heap, using char to make it byte addressable
+
+char *heap; // points to the first byte of the heap
+
+char *trgtMem; // target memory
+char *srcMem; // source memory
+char *freePtr; // free pointer
+
+
+StackSlot *stack;
 unsigned int *pcode;
 ObjRef *sda;
 
@@ -61,6 +82,107 @@ void fatalError(char *msg) {
   exit(1);
 }
 
+ObjRef copyObjectToFreeMem(ObjRef obj) {
+    ObjRef copy;
+    if (IS_PRIM(obj)) {
+        if (CHECK_OVERFLOW(GET_SIZE(obj) * sizeof(unsigned char))) {
+            fatalError("Garbage collection failed\ncopyObjectToFreeMem() out of memory");
+        }
+        // choosing to not use another tmp variable to store the initial location of freePtr, instead having a duplicate line of code
+        copy = (ObjRef) freePtr;
+        freePtr = freePtr + sizeof(unsigned int) + GET_SIZE(obj) * sizeof(unsigned char);
+        memcpy(copy->data, obj->data, GET_SIZE(obj) * sizeof(unsigned char));
+    }
+    else {
+        if (CHECK_OVERFLOW(GET_SIZE(obj) * sizeof(ObjRef*))) {
+            fatalError("Garbage collection failed\ncopyObjectToFreeMem() out of memory");
+        }
+        copy = (ObjRef) freePtr;
+        freePtr = freePtr + sizeof(unsigned int) + GET_SIZE(obj) * sizeof(ObjRef*);
+        memcpy(copy->data, obj->data, GET_SIZE(obj) * sizeof(ObjRef*));
+    }
+    copy->size = obj->size;
+    
+    return copy;
+}
+
+ObjRef relocate(ObjRef orig) {
+    ObjRef copy;
+    if(orig == NULL) {
+    copy = NULL;    //relocate(nil) = nil
+    }
+    else if(HAS_BH(orig)) { // Objekt ist bereits kopiert, Forward-Pointer gesetzt
+    copy = (ObjRef) GET_SIZE(orig);
+    }
+    else { //   Objekt muss noch kopiert werden
+    copy = copyObjectToFreeMem(orig); 
+    // im Original: setze Broken-Heart-Flag und Forward-Pointer 
+    orig->size = (unsigned int) copy | BH;
+    }
+    return copy;
+}
+
+void collectGarbage() {
+    char *scan;
+    int aliveObjCount = 0;
+    int aliveObjBytes = 0;
+
+    // flip trgtMem and srcMem, set freePtr to start of trgtMem. Using scan as tmp variable
+    scan = trgtMem;
+    trgtMem = srcMem;
+    srcMem = scan;
+    freePtr = trgtMem;
+
+    // relocate root phase
+
+    rvr = relocate(rvr);
+    bip.op1 = relocate(bip.op1);
+    bip.op2 = relocate(bip.op2);
+    bip.res = relocate(bip.res);
+    bip.rem = relocate(bip.rem);
+    // relocate stack
+    for (int i = 0; i < sp; i++) {
+        if (stack[i].isObjRef == 1) {
+            stack[i].u.objRef = relocate(stack[i].u.objRef);
+        }
+    }
+    // relocate static data area
+    for (int i = 0; i < staticsCount; i++) {
+        sda[i] = relocate(sda[i]);
+    }
+
+    // scan phase
+
+    scan = trgtMem;
+    while (scan != freePtr){
+        printf("scan: %p\n", (void *) scan);
+        /* es gibt noch Objekte, die gescannt werden müssen */
+        if (!IS_PRIM((ObjRef) scan)){
+            for (int i = 0; i < GET_SIZE((ObjRef) scan); i++) {
+                GET_REFS((ObjRef) scan)[i] = relocate(GET_REFS((ObjRef) scan)[i]);
+            }
+            aliveObjBytes += GET_SIZE((ObjRef) scan) * sizeof(ObjRef*) + sizeof(unsigned int);
+            scan = scan + GET_SIZE((ObjRef) scan) * sizeof(ObjRef*) + sizeof(unsigned int);
+        }
+        else {
+            aliveObjBytes += GET_SIZE((ObjRef) scan) * sizeof(unsigned char) + sizeof(unsigned int);
+            scan = scan + GET_SIZE((ObjRef) scan) * sizeof(unsigned char) + sizeof(unsigned int);
+        }
+        aliveObjCount++;
+    }
+
+    if (stats == 1) {
+        printf("Garbage Collection Stats:\n");
+        printf("Anzahl seit dem letzen Durchlauf angeleten Objekte: %d, Bytes: %d\n", createdObjCount, createdObjBytes);
+        printf("Anzahl lebender Objekte: %d, Bytes: %d\n", aliveObjCount, aliveObjBytes);
+        printf("Anzahl freier Bytes: %d\n", heapSize/2 - aliveObjBytes);
+    }
+    if (prune == 1) memset(srcMem, 0, heapSize/2); // clear srcMem
+
+    createdObjCount = 0;
+    createdObjBytes = 0;
+}
+
 /*
  * This function is called whenever a new primitive object with
  * a certain amount of internal memory is needed. It should return
@@ -74,15 +196,20 @@ void fatalError(char *msg) {
  * the function returns.
  */
 void * newPrimObject(int dataSize) {
-  ObjRef bigObjRef;
+    ObjRef bigObjRef;
 
-  bigObjRef = malloc(sizeof(unsigned int) +
-                  dataSize * sizeof(unsigned char));
-  if (bigObjRef == NULL) {
-    fatalError("newPrimObject() got no memory");
-  }
-  bigObjRef->size = dataSize;
-  return bigObjRef;
+    // freePtr - heap gives the amount of allocated bytes in trgtMem (solves problem of switching trgtMem and srcMem pointers
+    if (CHECK_OVERFLOW(dataSize * sizeof(unsigned char))) collectGarbage();
+    if (CHECK_OVERFLOW(dataSize * sizeof(unsigned char))) fatalError("newPrimObject() out of memory");
+
+    bigObjRef = (ObjRef) freePtr;
+    freePtr = freePtr + sizeof(unsigned int) + dataSize * sizeof(unsigned char);
+
+    bigObjRef->size = dataSize;
+
+    createdObjBytes += dataSize * sizeof(unsigned char) + sizeof(unsigned int);
+    createdObjCount++;
+    return bigObjRef;
 }
 
 void * getPrimObjectDataPointer(void * obj){
@@ -93,14 +220,19 @@ void * getPrimObjectDataPointer(void * obj){
 ObjRef newCompoundObject(int numOfRefs) {
     ObjRef compound;
 
-    compound = malloc(sizeof(unsigned int) + numOfRefs * sizeof(ObjRef*));
-    if (compound == NULL) {
-    fatalError("newCompoundObject got no memory");
-    }
+    if (CHECK_OVERFLOW(numOfRefs * sizeof(ObjRef*))) collectGarbage();
+    if (CHECK_OVERFLOW(numOfRefs * sizeof(ObjRef*))) fatalError("newCompoundObject() out of memory");
+
+    compound = (ObjRef) freePtr;
+    freePtr = freePtr + sizeof(unsigned int) + numOfRefs * sizeof(ObjRef*);
+
     compound->size = numOfRefs | MSB;
     for (int i = 0; i < numOfRefs; i++) {
         GET_REFS(compound)[i] = NULL;
     }
+
+    createdObjBytes += numOfRefs * sizeof(ObjRef*) + sizeof(unsigned int);
+    createdObjCount++;
     return compound;
 }
 
@@ -111,6 +243,7 @@ void clearStackSlot(StackSlot *slot) {
 void checkIfObject(StackSlot *slot) {
     if (slot->isObjRef == 0) fatalError("Object reference expected");
 }
+
 
 void execute(unsigned int IR) {
     switch(IR>>24) {
@@ -558,7 +691,6 @@ void printWithBorder(const char *format, ...) {
 
 void initializeProgram(char prog[]) {
     int fileVersion;
-    
     FILE *fp;
 
     // open file
@@ -630,131 +762,176 @@ void initializeProgram(char prog[]) {
 
     // close file
     fclose(fp);
+}
 
-    printf("Ninja Virtual Machine started\n");
+void debugger() {
+    int cmdAccepted = 0;
+    char command[255];
+
+    while(!halt){
+        printf("next instruction:\t");
+        printInstruction((unsigned int) *(pcode+pc));
+        printf("\n");
+
+        do {
+            cmdAccepted = 1;
+            scanf("%s", command);
+
+            if (strcmp(command, "stack") == 0) {    // very jankey, but not a lot of effort for almost full functionality, maybe improve debugger later
+                for (int i = 0; i < sp; i++) {
+                        if (stack[i].isObjRef == 1) {
+                            if (stack[i].u.objRef == NULL) printf("NULL\n");
+                            else {
+                                if (IS_PRIM(stack[i].u.objRef)) {
+                                    printf("Object: %p, value:", (void *) stack[i].u.objRef);
+                                    bigDump(stdout, stack[i].u.objRef);
+                                    printf("\n");
+                                } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                            }
+                        }
+                        else printf("%d\n", stack[i].u.number);
+                    }
+            }
+            else if (strcmp(command, "pointer") == 0) {
+                printf("sp: %d\npc: %d\nfp: %d\nrvr:", sp, pc, fp);
+                if (rvr != NULL) {
+                    bigDump(stdout, rvr);
+                    printf("\n");
+                }
+                else printf("NULL\n");
+            }
+            else if (strcmp(command, "static") == 0) {
+                for (int i = 0; i < staticsCount; i++) {
+                    if (sda[i] == NULL) printf("%d: Empty\n", i);
+                    else printf("Object: %p, value:", (void *) sda[i]);
+                    bigDump(stdout, sda[i]);
+                    printf("\n");
+                }
+            }
+            else if (strcmp(command, "program") == 0) {
+                for (int i = 0; i < instrCount-1; i++) {
+                printf("%03d:\t",i);
+                printInstruction((unsigned int) *(pcode+i));
+                }
+            }
+            else if (strcmp(command, "next") == 0) {
+                IR = (unsigned int) *(pcode + pc);
+                pc = pc+1;
+                execute(IR);
+            }
+            else if (strcmp(command, "eof") == 0){  // copied printing from "stack"
+                while(!halt) {
+                    IR = (unsigned int) *(pcode + pc);
+                    pc = pc+1;
+                    printf("--------------------\n");
+                    printInstruction(IR);
+                    printf("--------------------\n");
+                    for (int i = 0; i < sp; i++) {
+                        if (stack[i].isObjRef == 1) {
+                            if (stack[i].u.objRef == NULL) printf("NULL\n");
+                            else {
+                                if (IS_PRIM(stack[i].u.objRef)) {
+                                    printf("Object: %p, value:", (void *) stack[i].u.objRef);
+                                    bigDump(stdout, stack[i].u.objRef);
+                                    printf("\n");
+                                } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
+                            }
+                        }
+                        else printf("%d\n", stack[i].u.number);
+                    }
+                    execute(IR);
+                }
+            }
+            else if (strcmp(command, "help") == 0){
+                printf("stack, pointer, static, program, next, eof, exit\n");
+            }
+            else if (strcmp(command, "exit") == 0){
+                halt = 1;
+            }
+            else {
+                printf("unknown command: %s. type \"help\" to show valid debugger commands\n", command);
+                cmdAccepted = 0;
+            }
+            printf("\n");
+        } while (cmdAccepted == 0);
+    }
+
+}
+
+void allocateStackAndHeap() {
+    if (stackSize < 1) {
+        printf("invalid stack size, --help for valid arguments \n");
+        exit(-1);
+    }
+    if (heapSize < 1) {
+        printf("invalid heap size, --help for valid arguments \n");
+        exit(-1);
+    }
+    heapSize = heapSize * 1024;
+
+    // allocate stackSize amount of kiB for the stack
+    stack = (StackSlot *) malloc(stackSize * 1024);
+    if (stack == NULL) {
+        printf("memory could not be allocated\n");
+        exit(-1);
+    }
+    heap = (void *) malloc(heapSize);
+    if (heap == NULL) {
+        printf("memory could not be allocated\n");
+        exit(-1);
+    }
+
+    // set pointers to appropriate locations
+    trgtMem = heap;
+    srcMem = heap + heapSize/2;
+    freePtr = heap;
+    
 }
 
 int main(int argc, char *argv[]) {
-    unsigned int IR;
-    int debug = 0;
-
-    if (strcmp(argv[1],"--debug") == 0 && argc == 3) debug = 1;
-    else if (argc != 2) {
-        printf("please provide a single command line argument see --help for valid arguments\n");
-        exit(-1);
-    }
-    else if (strcmp(argv[1],"--version\n") == 0) {
-        printf("Version: %d", version);
-        exit(0);
-    }
-    else if (strcmp(argv[1],"--help") == 0) {
-        printf("usage: ./Aufgabe3 [option] \n Options:\n [prog].bin \t to execute a ninja binary file \n--debug [prog].bin \t to execute a ninja binary file with the debugger \n--version \t show version and exit\n --help\t\tshow this help and exit\n");
-        exit(0);
-    }
+    // TODO: ADD: stack help text
     
-    //TODO: fix printing of bigints 
-
-    if (debug == 1) {
-        int cmdAccepted = 0;
-        char command[255];
-        initializeProgram(argv[2]);
-
-        while(!halt){
-            printf("next instruction:\t");
-            printInstruction((unsigned int) *(pcode+pc));
-            printf("\n");
-
-            do {
-                cmdAccepted = 1;
-                scanf("%s", command);
-
-                if (strcmp(command, "stack") == 0) {    // very jankey, but not a lot of effort for almost full functionality, maybe improve debugger later
-                    for (int i = 0; i < sp; i++) {
-                            if (stack[i].isObjRef == 1) {
-                                if (stack[i].u.objRef == NULL) printf("NULL\n");
-                                else {
-                                    if (IS_PRIM(stack[i].u.objRef)) {
-                                        printf("Object: %p, value:", (void *) stack[i].u.objRef);
-                                        bigDump(stdout, stack[i].u.objRef);
-                                        printf("\n");
-                                    } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
-                                }
-                            }
-                            else printf("%d\n", stack[i].u.number);
-                      }
-                }
-                else if (strcmp(command, "pointer") == 0) {
-                    printf("sp: %d\npc: %d\nfp: %d\nrvr:", sp, pc, fp);
-                    if (rvr != NULL) {
-                        bigDump(stdout, rvr);
-                        printf("\n");
-                    }
-                    else printf("NULL\n");
-                }
-                else if (strcmp(command, "static") == 0) {
-                    for (int i = 0; i < staticsCount; i++) {
-                        if (sda[i] == NULL) printf("%d: Empty\n", i);
-                        else printf("Object: %p, value:", (void *) sda[i]);
-                        bigDump(stdout, sda[i]);
-                        printf("\n");
-                    }
-                }
-                else if (strcmp(command, "program") == 0) {
-                    for (int i = 0; i < instrCount-1; i++) {
-                    printf("%03d:\t",i);
-                    printInstruction((unsigned int) *(pcode+i));
-                    }
-                }
-                else if (strcmp(command, "next") == 0) {
-                    IR = (unsigned int) *(pcode + pc);
-                    pc = pc+1;
-                    execute(IR);
-                }
-                else if (strcmp(command, "eof") == 0){  // copied printing from "stack"
-                    while(!halt) {
-                        IR = (unsigned int) *(pcode + pc);
-                        pc = pc+1;
-                        printf("--------------------\n");
-                        printInstruction(IR);
-                        printf("--------------------\n");
-                        for (int i = 0; i < sp; i++) {
-                            if (stack[i].isObjRef == 1) {
-                                if (stack[i].u.objRef == NULL) printf("NULL\n");
-                                else {
-                                    if (IS_PRIM(stack[i].u.objRef)) {
-                                        printf("Object: %p, value:", (void *) stack[i].u.objRef);
-                                        bigDump(stdout, stack[i].u.objRef);
-                                        printf("\n");
-                                    } else printf("Compound-Object: %p\n", (void *) stack[i].u.objRef);
-                                }
-                            }
-                            else printf("%d\n", stack[i].u.number);
-                      }
-                       execute(IR);
-                    }
-                }
-                else if (strcmp(command, "help") == 0){
-                    printf("stack, pointer, static, program, next, eof, exit\n");
-                }
-                else if (strcmp(command, "exit") == 0){
-                    halt = 1;
-                }
-                else {
-                    printf("unknown command: %s. type \"help\" to show valid debugger commands\n", command);
-                    cmdAccepted = 0;
-                }
-                printf("\n");
-            } while (cmdAccepted == 0);
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i],"--debug") == 0) debug = 1;
+        if (strcmp(argv[i],"--version\n") == 0) {
+            printf("Version: %d", version);
+            exit(0);
+        }
+        if (strcmp(argv[i],"--help") == 0) {
+            printf("usage: ./Aufgabe3 [option] \n Options:\n [prog].bin \t to execute a ninja binary file \n--debug [prog].bin \t to execute a ninja binary file with the debugger \n--version \t show version and exit\n --help\t\tshow this help and exit\n");
+            exit(0);
+        }
+        if (strcmp(argv[i],"--stack") == 0) {
+            stackSize = atoi(argv[i+1]);
+        }
+        if (strcmp(argv[i],"--heap") == 0) {
+            heapSize = atoi(argv[i+1]);
+        }
+        if (strcmp(argv[i],"--gcprune") == 0) {
+            prune = 1;
+        }
+        if (strcmp(argv[i],"--gcstats") == 0) {
+            stats = 1;
         }
     }
+
+    allocateStackAndHeap();
+
+    initializeProgram(argv[argc-1]);
+    printf("Ninja Virtual Machine started\n");
+
+    if (debug == 1) {
+        debugger();
+    }
     else {
-        initializeProgram(argv[1]);
         while(!halt) {
             IR = (unsigned int) *(pcode + pc);
             pc = pc+1;
             execute(IR);
         }
     }
+    // to show stats even for small programs
+    collectGarbage();
 
     printf("Ninja Virtual Machine stopped\n");
     exit(0);
