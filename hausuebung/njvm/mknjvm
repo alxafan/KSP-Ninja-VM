@@ -11,6 +11,7 @@
 
 # The following line is an example for 
 
-echo gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
-gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
+echo gcc -I src/build/include -L src/build/lib -g -Wall -std=c99 -pedantic -o njvm src/njvm.c -lbigint
+
+gcc -I src/build/include -L src/build/lib -g -Wall -std=c99 -pedantic -o njvm src/njvm.c -lbigint
 

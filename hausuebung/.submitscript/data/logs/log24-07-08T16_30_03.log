@@ -1,0 +1,45 @@
+[2024-07-08 16:30:03.840501] Bootstrap log:
+which: no python3.10 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.9 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.8 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.7 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.6 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+Identified Python 3.12.4 at /usr/bin/python3.12
+[Bootstrap] Identified pip 24.0 from /usr/lib/python3.12/site-packages/pip (python 3.12)' at /usr/bin/python3.12 -m pip
+[Bootstrap] Identified 'pipenv, version 2024.0.1' at /usr/bin/python3.12 -m pipenv
+[Bootstrap] Running '/usr/bin/python3.12 -m pipenv install --python 3.12' to ensure the existence of a virtual environment.
+[Bootstrap] This may take a moment.
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+Installing dependencies from Pipfile.lock (9e52dd)...
+[Bootstrap] Running the script in a virtual environment.
+/usr/bin/python3.12 -m pipenv run python3 ./main.py
+/home/aafn/KSP/hausuebung/.submitscript/src/submitscript/data/submission.py:87: SyntaxWarning: invalid escape sequence '\['
+  matched = re.search("(\[(.*)])?\s*(.+)", self.path.name)
+
+[2024-07-08 16:30:03.840528] === Welcome ===
+[2024-07-08 16:30:03.939195] Please review the currently saved information about your team:
+[2024-07-08 16:30:03.939475]  1 - First name: Alexander; Last name: Afanasjew; Matriculation number: 5452745
+[2024-07-08 16:30:03.939521]  2 - First name: Nikita; Last name: Matveev; Matriculation number: 5423235
+[2024-07-08 16:30:05.256031] 
+[2024-07-08 16:30:06.622853] 
+[2024-07-08 16:30:06.622947] === Submitting ===
+[2024-07-08 16:30:07.603994] 
+[2024-07-08 16:30:07.604552] 
+[2024-07-08 16:30:07.604598] Selected variant 'njvm' for assignment 'Aufgabe-2'.
+[2024-07-08 16:30:07.612130] === Building submission ===
+[2024-07-08 16:30:07.612160] Running './mknjvm'.
+[2024-07-08 16:30:07.612166] === Building submission finished ===
+[2024-07-08 16:30:07.632544] Building your solution failed!
+[2024-07-08 16:30:20.437335] === BEGIN Build Log ===
+[2024-07-08 16:30:20.437426] gcc -I src/build/include -L src/bigint/build/lib -g -Wall -std=c99 -pedantic -o njvm src/njvm.c -lbigint
+src/njvm.c:8:10: fatal error: support.h: No such file or directory
+    8 | #include <support.h>
+      |          ^~~~~~~~~~~
+compilation terminated.
+
+[2024-07-08 16:30:20.437454] === END Build Log ===
+[2024-07-08 16:30:55.773181] Aborting submission.
+[2024-07-08 16:30:55.774612] 

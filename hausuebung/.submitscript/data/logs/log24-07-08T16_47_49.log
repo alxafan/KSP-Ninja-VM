@@ -1,3 +1,4 @@
+[2024-07-08 16:47:49.204086] Bootstrap log:
 which: no python3.10 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
 which: no python3.9 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
 which: no python3.8 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
@@ -17,42 +18,69 @@ Installing dependencies from Pipfile.lock (9e52dd)...
 /usr/bin/python3.12 -m pipenv run python3 ./main.py
 /home/aafn/KSP/hausuebung/.submitscript/src/submitscript/data/submission.py:87: SyntaxWarning: invalid escape sequence '\['
   matched = re.search("(\[(.*)])?\s*(.+)", self.path.name)
-=== Welcome ===
-Please review the currently saved information about your team:
- 1 - First name: Alexander; Last name: Afanasjew; Matriculation number: 5452745
- 2 - First name: Nikita; Last name: Matveev; Matriculation number: 5423235
-Is this information up to date? [Y/n] 
-Do you want to submit a solution now? [Y/n] 
-=== Submitting ===
-Please choose the assignment you want to submit. 
- 1 - Aufgabe-1
- 2 - Aufgabe-2
-Please enter the id of your selection: 
 
-Selected variant 'njvm' for assignment 'Aufgabe-2'.
-=== Building submission ===
-Running './mknjvm'.
-=== Building submission finished ===
-=== Cleaning directory for submission ===
-=== Cleaning directory finished ===
-=== Starting Upload ===
-=== Upload finished ===
-=== BEGIN Upload Log
-[2024-07-08 16:47:52.774507] Received submission deb5a485-5802-4494-a41a-f8130f6d2810
+[2024-07-08 16:47:49.204116] === Welcome ===
+[2024-07-08 16:47:49.330527] Please review the currently saved information about your team:
+[2024-07-08 16:47:49.330605]  1 - First name: Alexander; Last name: Afanasjew; Matriculation number: 5452745
+[2024-07-08 16:47:49.330616]  2 - First name: Nikita; Last name: Matveev; Matriculation number: 5423235
+[2024-07-08 16:47:50.581635] 
+[2024-07-08 16:47:51.570147] 
+[2024-07-08 16:47:51.570249] === Submitting ===
+[2024-07-08 16:47:52.480686] 
+[2024-07-08 16:47:52.481256] 
+[2024-07-08 16:47:52.481310] Selected variant 'njvm' for assignment 'Aufgabe-2'.
+[2024-07-08 16:47:52.495677] === Building submission ===
+[2024-07-08 16:47:52.495765] Running './mknjvm'.
+[2024-07-08 16:47:52.495794] === Building submission finished ===
+[2024-07-08 16:47:52.644534] === Cleaning directory for submission ===
+[2024-07-08 16:47:52.646662] === Cleaning directory finished ===
+[2024-07-08 16:47:52.674018] === Starting Upload ===
+[2024-07-08 16:47:52.890176] === Upload finished ===
+[2024-07-08 16:47:52.890236] === BEGIN Upload Log
+[2024-07-08 16:47:52.890263] [2024-07-08 16:47:52.774507] Received submission deb5a485-5802-4494-a41a-f8130f6d2810
 [2024-07-08 16:47:52.774568] Ip: 172.18.0.3
 [2024-07-08 16:47:52.774589] Team members: [('Afanasjew', 'Alexander', '5452745'), ('Matveev', 'Nikita', '5423235')]
 [2024-07-08 16:47:52.855587] Your submission was ACCEPTED for course 'KSP-ss24', assignment 'Aufgabe-2'.
 [2024-07-08 16:47:52.855628] Your submission has the id deb5a485-5802-4494-a41a-f8130f6d2810.
 [2024-07-08 16:47:52.855908] It will be evaluated shortly. Please check back soon for your results.
 
-=== END Upload Log
-Successfully submitted your solution. Please see the upload log above for more details.
-Polling for results (Press CTRL + C to abort).............................
+[2024-07-08 16:47:52.890289] === END Upload Log
+[2024-07-08 16:47:52.890313] Successfully submitted your solution. Please see the upload log above for more details.
+[2024-07-08 16:47:52.891607] Polling for results (Press CTRL + C to abort).
+[2024-07-08 16:47:53.002383] .
+[2024-07-08 16:47:54.117231] .
+[2024-07-08 16:47:55.231541] .
+[2024-07-08 16:47:56.355118] .
+[2024-07-08 16:47:57.471032] .
+[2024-07-08 16:47:58.582998] .
+[2024-07-08 16:47:59.699274] .
+[2024-07-08 16:48:00.820529] .
+[2024-07-08 16:48:01.945070] .
+[2024-07-08 16:48:03.061879] .
+[2024-07-08 16:48:04.181090] .
+[2024-07-08 16:48:05.299069] .
+[2024-07-08 16:48:06.416694] .
+[2024-07-08 16:48:07.527585] .
+[2024-07-08 16:48:08.651200] .
+[2024-07-08 16:48:09.768558] .
+[2024-07-08 16:48:10.879299] .
+[2024-07-08 16:48:11.995505] .
+[2024-07-08 16:48:13.116050] .
+[2024-07-08 16:48:14.228304] .
+[2024-07-08 16:48:15.340424] .
+[2024-07-08 16:48:16.465350] .
+[2024-07-08 16:48:17.596896] .
+[2024-07-08 16:48:18.719952] .
+[2024-07-08 16:48:19.835411] .
+[2024-07-08 16:48:20.960936] .
+[2024-07-08 16:48:22.077256] .
+[2024-07-08 16:48:23.221194] .
+[2024-07-08 16:48:24.464064] 
 === Evaluation results for submission 'deb5a485-5802-4494-a41a-f8130f6d2810' retrieved. ===
-You achieved the score 27/27 (100%).
-You have PASSED this assignment.
-Do you want to view the evaluation log now? [Y/n] === BEGIN Evaluation Log
-[2024-07-08 16:47:52.857692] Start of evaluation log for submission 'deb5a485-5802-4494-a41a-f8130f6d2810'.
+[2024-07-08 16:48:24.464144] You achieved the score 27/27 (100%).
+[2024-07-08 16:48:24.464165] You have PASSED this assignment.
+[2024-07-08 16:48:29.630145] === BEGIN Evaluation Log
+[2024-07-08 16:48:29.630289] [2024-07-08 16:47:52.857692] Start of evaluation log for submission 'deb5a485-5802-4494-a41a-f8130f6d2810'.
 [2024-07-08 16:47:52.858023] Team member: ('Afanasjew', 'Alexander', '5452745')
 [2024-07-08 16:47:52.858045] Team member: ('Matveev', 'Nikita', '5423235')
 [2024-07-08 16:47:52.875281] Preparing the sandbox
@@ -241,7 +269,6 @@ gcc -I src/build/include -L src/build/lib -g -Wall -std=c99 -pedantic -o njvm sr
 [2024-07-08 16:48:23.832140] 62% are needed to pass.
 [2024-07-08 16:48:24.086706] You have PASSED this assignment.
 
-=== END Evaluation Log
-NOTE: This evaluation log is also available at '/home/aafn/KSP/hausuebung/.submitscript/data/assignments/Aufgabe-2/submissions/[evaluated] deb5a485-5802-4494-a41a-f8130f6d2810/evaluation.log'
-
-Do you want to submit another solution? [Y/n] 
+[2024-07-08 16:48:29.630362] === END Evaluation Log
+[2024-07-08 16:48:29.630495] NOTE: This evaluation log is also available at '/home/aafn/KSP/hausuebung/.submitscript/data/assignments/Aufgabe-2/submissions/[evaluated] deb5a485-5802-4494-a41a-f8130f6d2810/evaluation.log'
+[2024-07-08 16:48:29.630571] 

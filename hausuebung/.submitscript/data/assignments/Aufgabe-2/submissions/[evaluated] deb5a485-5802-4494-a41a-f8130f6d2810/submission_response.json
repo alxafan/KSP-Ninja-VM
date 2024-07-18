@@ -1,0 +1,23 @@
+{
+    "accepted": true,
+    "immediate_evaluation": true,
+    "log": "[2024-07-08 16:47:52.774507] Received submission deb5a485-5802-4494-a41a-f8130f6d2810\n[2024-07-08 16:47:52.774568] Ip: 172.18.0.3\n[2024-07-08 16:47:52.774589] Team members: [('Afanasjew', 'Alexander', '5452745'), ('Matveev', 'Nikita', '5423235')]\n[2024-07-08 16:47:52.855587] Your submission was ACCEPTED for course 'KSP-ss24', assignment 'Aufgabe-2'.\n[2024-07-08 16:47:52.855628] Your submission has the id deb5a485-5802-4494-a41a-f8130f6d2810.\n[2024-07-08 16:47:52.855908] It will be evaluated shortly. Please check back soon for your results.\n",
+    "submission": {
+        "authors": [
+            {
+                "first_name": "Alexander",
+                "last_name": "Afanasjew",
+                "matriculation_number": "5452745"
+            },
+            {
+                "first_name": "Nikita",
+                "last_name": "Matveev",
+                "matriculation_number": "5423235"
+            }
+        ],
+        "evaluation_result": null,
+        "id": "deb5a485-5802-4494-a41a-f8130f6d2810",
+        "timestamp_ns": 1720450072855375308,
+        "upload_log": "[2024-07-08 16:47:52.774507] Received submission deb5a485-5802-4494-a41a-f8130f6d2810\n[2024-07-08 16:47:52.774568] Ip: 172.18.0.3\n[2024-07-08 16:47:52.774589] Team members: [('Afanasjew', 'Alexander', '5452745'), ('Matveev', 'Nikita', '5423235')]\n[2024-07-08 16:47:52.855587] Your submission was ACCEPTED for course 'KSP-ss24', assignment 'Aufgabe-2'.\n[2024-07-08 16:47:52.855628] Your submission has the id deb5a485-5802-4494-a41a-f8130f6d2810.\n[2024-07-08 16:47:52.855908] It will be evaluated shortly. Please check back soon for your results.\n\n"
+    }
+}

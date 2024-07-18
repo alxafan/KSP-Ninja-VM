@@ -1,0 +1,302 @@
+[2024-07-08 16:11:18.825535] Bootstrap log:
+which: no python3.10 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.9 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.8 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.7 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+which: no python3.6 in (/home/aafn/.local/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+Identified Python 3.12.4 at /usr/bin/python3.12
+[Bootstrap] Identified pip 24.0 from /usr/lib/python3.12/site-packages/pip (python 3.12)' at /usr/bin/python3.12 -m pip
+[Bootstrap] Identified 'pipenv, version 2024.0.1' at /usr/bin/python3.12 -m pipenv
+[Bootstrap] Running '/usr/bin/python3.12 -m pipenv install --python 3.12' to ensure the existence of a virtual environment.
+[Bootstrap] This may take a moment.
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+Installing dependencies from Pipfile.lock (9e52dd)...
+[Bootstrap] Running the script in a virtual environment.
+/usr/bin/python3.12 -m pipenv run python3 ./main.py
+/home/aafn/KSP/hausuebung/.submitscript/src/submitscript/data/submission.py:87: SyntaxWarning: invalid escape sequence '\['
+  matched = re.search("(\[(.*)])?\s*(.+)", self.path.name)
+
+[2024-07-08 16:11:18.825592] === Welcome ===
+[2024-07-08 16:11:18.970504] Please review the currently saved information about your team:
+[2024-07-08 16:11:18.970768]  1 - First name: Alexander; Last name: Afanasjew; Matriculation number: 5452745
+[2024-07-08 16:11:18.970779]  2 - First name: Nikita; Last name: Matveev; Matriculation number: 5423235
+[2024-07-08 16:11:22.158434] 
+[2024-07-08 16:11:23.717718] 
+[2024-07-08 16:11:23.717750] === Submitting ===
+[2024-07-08 16:11:25.317361] 
+[2024-07-08 16:11:25.317550] 
+[2024-07-08 16:11:25.317564] Selected variant 'njvm' for assignment 'Aufgabe-2'.
+[2024-07-08 16:11:25.330488] === Building submission ===
+[2024-07-08 16:11:25.330517] Running './mknjvm'.
+[2024-07-08 16:11:25.330524] === Building submission finished ===
+[2024-07-08 16:11:25.408611] === Cleaning directory for submission ===
+[2024-07-08 16:11:25.409936] === Cleaning directory finished ===
+[2024-07-08 16:11:25.418598] === Starting Upload ===
+[2024-07-08 16:11:25.585956] === Upload finished ===
+[2024-07-08 16:11:25.585973] === BEGIN Upload Log
+[2024-07-08 16:11:25.585980] [2024-07-08 16:11:25.483813] Received submission 7a6a352e-6897-4166-8937-79d8a3759c6f
+[2024-07-08 16:11:25.483876] Ip: 172.18.0.3
+[2024-07-08 16:11:25.483907] Team members: [('Afanasjew', 'Alexander', '5452745'), ('Matveev', 'Nikita', '5423235')]
+[2024-07-08 16:11:25.551859] Your submission was ACCEPTED for course 'KSP-ss24', assignment 'Aufgabe-2'.
+[2024-07-08 16:11:25.551903] Your submission has the id 7a6a352e-6897-4166-8937-79d8a3759c6f.
+[2024-07-08 16:11:25.552184] It will be evaluated shortly. Please check back soon for your results.
+
+[2024-07-08 16:11:25.585986] === END Upload Log
+[2024-07-08 16:11:25.585992] Successfully submitted your solution. Please see the upload log above for more details.
+[2024-07-08 16:11:25.586342] Polling for results (Press CTRL + C to abort).
+[2024-07-08 16:11:25.672378] .
+[2024-07-08 16:11:26.757826] .
+[2024-07-08 16:11:27.844172] .
+[2024-07-08 16:11:28.940970] .
+[2024-07-08 16:11:30.029168] .
+[2024-07-08 16:11:31.224890] 
+=== Evaluation results for submission '7a6a352e-6897-4166-8937-79d8a3759c6f' retrieved. ===
+[2024-07-08 16:11:31.224922] You achieved the score 0/27 (0%).
+[2024-07-08 16:11:31.224948] You have NOT PASSED this assignment.
+[2024-07-08 16:11:47.070589] === BEGIN Evaluation Log
+[2024-07-08 16:11:47.070641] [2024-07-08 16:11:25.553577] Start of evaluation log for submission '7a6a352e-6897-4166-8937-79d8a3759c6f'.
+[2024-07-08 16:11:25.553982] Team member: ('Afanasjew', 'Alexander', '5452745')
+[2024-07-08 16:11:25.554070] Team member: ('Matveev', 'Nikita', '5423235')
+[2024-07-08 16:11:25.573624] Preparing the sandbox
+[2024-07-08 16:11:26.179937] Unpacking submission in sandbox
+[2024-07-08 16:11:26.565212] Building the test subject
+[2024-07-08 16:11:26.565542] Building submitted njvm with the supplied 'mknjvm'-script.
+[2024-07-08 16:11:26.912835] Build log:
+gcc -g -Wall -std=c99 -pedantic -o njvm src/njvm.c
+[2024-07-08 16:11:27.042982] Beginning evaluation.
+[2024-07-08 16:11:27.043138] Evaluating test00 with the submitted solution.
+[2024-07-08 16:11:27.044072] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test00/coll1.bin'.
+[2024-07-08 16:11:27.182279] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.182333] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test00/coll1.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.182360] Test not passed.
+[2024-07-08 16:11:27.182371] Running Score: 0/1
+
+[2024-07-08 16:11:27.182390] Evaluating test01 with the submitted solution.
+[2024-07-08 16:11:27.183359] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test01/coll2.bin'.
+[2024-07-08 16:11:27.318261] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.318320] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test01/coll2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.318368] Test not passed.
+[2024-07-08 16:11:27.318385] Running Score: 0/2
+
+[2024-07-08 16:11:27.318408] Evaluating test02 with the submitted solution.
+[2024-07-08 16:11:27.319358] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test02/fact1.bin'.
+[2024-07-08 16:11:27.458383] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.458430] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test02/fact1.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.458460] Test not passed.
+[2024-07-08 16:11:27.458475] Running Score: 0/3
+
+[2024-07-08 16:11:27.458499] Evaluating test03 with the submitted solution.
+[2024-07-08 16:11:27.459521] Running '/home/solution/njvm/njvm --stack 64 --heap 256 --gcpurge /home/tests/test03/fact2.bin'.
+[2024-07-08 16:11:27.595845] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.595880] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 256 --gcpurge /home/tests/test03/fact2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.595903] Test not passed.
+[2024-07-08 16:11:27.595912] Running Score: 0/4
+
+[2024-07-08 16:11:27.595927] Evaluating test04 with the submitted solution.
+[2024-07-08 16:11:27.596802] Running '/home/solution/njvm/njvm --stack 64 --heap 256 --gcpurge /home/tests/test04/factor.bin'.
+[2024-07-08 16:11:27.719338] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.719374] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 256 --gcpurge /home/tests/test04/factor.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.719397] Test not passed.
+[2024-07-08 16:11:27.719406] Running Score: 0/5
+
+[2024-07-08 16:11:27.719421] Evaluating test05 with the submitted solution.
+[2024-07-08 16:11:27.720369] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test05/factor2.bin'.
+[2024-07-08 16:11:27.720390] Heaplimit (with ulimit -SHd) is 10000.
+[2024-07-08 16:11:27.878464] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:27.878501] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test05/factor2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:27.878524] Test not passed.
+[2024-07-08 16:11:27.878533] Running Score: 0/6
+
+[2024-07-08 16:11:27.878547] Evaluating test06 with the submitted solution.
+[2024-07-08 16:11:27.879338] Running '/home/solution/njvm/njvm --stack 64 --heap 256 /home/tests/test06/fib1.bin'.
+[2024-07-08 16:11:27.879358] Heaplimit (with ulimit -SHd) is 900.
+[2024-07-08 16:11:28.030120] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.030162] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 256 /home/tests/test06/fib1.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.030189] Test not passed.
+[2024-07-08 16:11:28.030203] Running Score: 0/7
+
+[2024-07-08 16:11:28.030227] Evaluating test07 with the submitted solution.
+[2024-07-08 16:11:28.031058] Running '/home/solution/njvm/njvm --stack 64 --heap 256 /home/tests/test07/fib2.bin'.
+[2024-07-08 16:11:28.031081] Heaplimit (with ulimit -SHd) is 900.
+[2024-07-08 16:11:28.172350] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.172388] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 256 /home/tests/test07/fib2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.172415] Test not passed.
+[2024-07-08 16:11:28.172428] Running Score: 0/8
+
+[2024-07-08 16:11:28.172446] Evaluating test08 with the submitted solution.
+[2024-07-08 16:11:28.173231] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test08/gcd.bin'.
+[2024-07-08 16:11:28.294540] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.294589] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test08/gcd.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.294617] Test not passed.
+[2024-07-08 16:11:28.294631] Running Score: 0/9
+
+[2024-07-08 16:11:28.294653] Evaluating test09 with the submitted solution.
+[2024-07-08 16:11:28.295426] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test09/harm.bin'.
+[2024-07-08 16:11:28.422909] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.422949] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test09/harm.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.422973] Test not passed.
+[2024-07-08 16:11:28.422984] Running Score: 0/10
+
+[2024-07-08 16:11:28.423002] Evaluating test10 with the submitted solution.
+[2024-07-08 16:11:28.423820] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test10/lcon.bin'.
+[2024-07-08 16:11:28.543719] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.543762] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test10/lcon.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.543786] Test not passed.
+[2024-07-08 16:11:28.543797] Running Score: 0/11
+
+[2024-07-08 16:11:28.543819] Evaluating test11 with the submitted solution.
+[2024-07-08 16:11:28.545009] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test11/listrev.bin'.
+[2024-07-08 16:11:28.677109] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.677153] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test11/listrev.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.677191] Test not passed.
+[2024-07-08 16:11:28.677202] Running Score: 0/12
+
+[2024-07-08 16:11:28.677222] Evaluating test12 with the submitted solution.
+[2024-07-08 16:11:28.678053] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test12/matinv.bin'.
+[2024-07-08 16:11:28.823268] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.823310] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test12/matinv.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.823334] Test not passed.
+[2024-07-08 16:11:28.823345] Running Score: 0/13
+
+[2024-07-08 16:11:28.823366] Evaluating test13 with the submitted solution.
+[2024-07-08 16:11:28.824211] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test13/tree.bin'.
+[2024-07-08 16:11:28.965373] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:28.965409] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test13/tree.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:28.965436] Test not passed.
+[2024-07-08 16:11:28.965447] Running Score: 0/14
+
+[2024-07-08 16:11:28.965473] Evaluating test14 with the submitted solution.
+[2024-07-08 16:11:28.966366] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test14/tree2.bin'.
+[2024-07-08 16:11:29.091816] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.091858] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test14/tree2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.091882] Test not passed.
+[2024-07-08 16:11:29.091893] Running Score: 0/15
+
+[2024-07-08 16:11:29.091911] Evaluating test15 with the submitted solution.
+[2024-07-08 16:11:29.092742] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test15/tree3.bin'.
+[2024-07-08 16:11:29.215416] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.215463] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test15/tree3.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.215484] Test not passed.
+[2024-07-08 16:11:29.215497] Running Score: 0/16
+
+[2024-07-08 16:11:29.215522] Evaluating test16 with the submitted solution.
+[2024-07-08 16:11:29.216427] Running '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test16/twodim.bin'.
+[2024-07-08 16:11:29.347875] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.347918] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 8192 /home/tests/test16/twodim.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.347942] Test not passed.
+[2024-07-08 16:11:29.347955] Running Score: 0/17
+
+[2024-07-08 16:11:29.347973] Evaluating test17 with the submitted solution.
+[2024-07-08 16:11:29.348740] Running '/home/solution/njvm/njvm /home/tests/test17/heap_test1.bin'.
+[2024-07-08 16:11:29.348768] Heaplimit (with ulimit -SHd) is 9000.
+[2024-07-08 16:11:29.497033] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.497074] Output (stdout) of '/home/solution/njvm/njvm /home/tests/test17/heap_test1.bin' (Limited to 50 lines/10000 characters):
+the file-version doesn't match the vm-version
+[2024-07-08 16:11:29.497100] Test not passed.
+[2024-07-08 16:11:29.497111] Running Score: 0/18
+
+[2024-07-08 16:11:29.497127] Evaluating test18 with the submitted solution.
+[2024-07-08 16:11:29.497942] Running '/home/solution/njvm/njvm --stack 64 --heap 1800 /home/tests/test18/heap_test2.bin'.
+[2024-07-08 16:11:29.497972] Heaplimit (with ulimit -SHd) is 2000.
+[2024-07-08 16:11:29.642232] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.642271] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 1800 /home/tests/test18/heap_test2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.642294] Test not passed.
+[2024-07-08 16:11:29.642305] Running Score: 0/19
+
+[2024-07-08 16:11:29.642323] Evaluating test19 with the submitted solution.
+[2024-07-08 16:11:29.643084] Running '/home/solution/njvm/njvm --stack 64 --heap 32768 /home/tests/test19/heap_test3.bin'.
+[2024-07-08 16:11:29.643107] Heaplimit (with ulimit -SHd) is 34000.
+[2024-07-08 16:11:29.777880] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.777917] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 32768 /home/tests/test19/heap_test3.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.777941] Test not passed.
+[2024-07-08 16:11:29.777951] Running Score: 0/20
+
+[2024-07-08 16:11:29.777969] Evaluating test20 with the submitted solution.
+[2024-07-08 16:11:29.778793] Running '/home/solution/njvm/njvm --gcpurge /home/tests/test20/heap_test1.bin'.
+[2024-07-08 16:11:29.778823] Heaplimit (with ulimit -SHd) is 9000.
+[2024-07-08 16:11:29.925265] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:29.925306] Output (stdout) of '/home/solution/njvm/njvm --gcpurge /home/tests/test20/heap_test1.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:29.925333] Test not passed.
+[2024-07-08 16:11:29.925344] Running Score: 0/21
+
+[2024-07-08 16:11:29.925363] Evaluating test21 with the submitted solution.
+[2024-07-08 16:11:29.926214] Running '/home/solution/njvm/njvm --stack 64 --gcpurge --heap 2000 /home/tests/test21/heap_test2.bin'.
+[2024-07-08 16:11:29.926240] Heaplimit (with ulimit -SHd) is 2200.
+[2024-07-08 16:11:30.070267] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.070309] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --gcpurge --heap 2000 /home/tests/test21/heap_test2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.070335] Test not passed.
+[2024-07-08 16:11:30.070346] Running Score: 0/22
+
+[2024-07-08 16:11:30.070364] Evaluating test22 with the submitted solution.
+[2024-07-08 16:11:30.071250] Running '/home/solution/njvm/njvm --stack 64 --heap 32768 --gcpurge /home/tests/test22/heap_test3.bin'.
+[2024-07-08 16:11:30.071276] Heaplimit (with ulimit -SHd) is 34000.
+[2024-07-08 16:11:30.212650] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.212690] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 32768 --gcpurge /home/tests/test22/heap_test3.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.212715] Test not passed.
+[2024-07-08 16:11:30.212726] Running Score: 0/23
+
+[2024-07-08 16:11:30.212750] Evaluating test23 with the submitted solution.
+[2024-07-08 16:11:30.213528] Running '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test23/factor2.bin'.
+[2024-07-08 16:11:30.349448] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.349492] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test23/factor2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.349516] Test not passed.
+[2024-07-08 16:11:30.349527] Running Score: 0/24
+
+[2024-07-08 16:11:30.349545] Evaluating test24 with the submitted solution.
+[2024-07-08 16:11:30.350430] Running '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test24/heap_test1.bin'.
+[2024-07-08 16:11:30.471768] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.471804] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test24/heap_test1.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.471828] Test not passed.
+[2024-07-08 16:11:30.471840] Running Score: 0/25
+
+[2024-07-08 16:11:30.471858] Evaluating test25 with the submitted solution.
+[2024-07-08 16:11:30.472864] Running '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test25/heap_test2.bin'.
+[2024-07-08 16:11:30.609896] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.609934] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test25/heap_test2.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.609959] Test not passed.
+[2024-07-08 16:11:30.609971] Running Score: 0/26
+
+[2024-07-08 16:11:30.609990] Evaluating test26 with the submitted solution.
+[2024-07-08 16:11:30.610791] Running '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test26/heap_test3.bin'.
+[2024-07-08 16:11:30.739169] Exit code was 255. All exit codes >= 127 fail the test.
+[2024-07-08 16:11:30.739208] Output (stdout) of '/home/solution/njvm/njvm --stack 64 --heap 1 /home/tests/test26/heap_test3.bin' (Limited to 50 lines/10000 characters):
+please provide a single command line argument see --help for valid arguments
+[2024-07-08 16:11:30.739233] Test not passed.
+[2024-07-08 16:11:30.739244] Running Score: 0/27
+
+[2024-07-08 16:11:30.739269] Final score: 0/27 (0%). 
+[2024-07-08 16:11:30.739378] 62% are needed to pass.
+[2024-07-08 16:11:31.008692] You have NOT PASSED this assignment.
+[2024-07-08 16:11:31.008989] You can try again. Deadline: 14.07.2024 23:59
+
+[2024-07-08 16:11:47.070665] === END Evaluation Log
+[2024-07-08 16:11:47.070710] NOTE: This evaluation log is also available at '/home/aafn/KSP/hausuebung/.submitscript/data/assignments/Aufgabe-2/submissions/[evaluated] 7a6a352e-6897-4166-8937-79d8a3759c6f/evaluation.log'
+[2024-07-08 16:11:47.070735] 

@@ -1,0 +1,19 @@
+[2024-07-08 16:25:22.152821] Start of evaluation log for submission 'cf9fe422-851a-4594-a73b-3366ab4643ea'.
+[2024-07-08 16:25:22.153401] Team member: ('Afanasjew', 'Alexander', '5452745')
+[2024-07-08 16:25:22.153434] Team member: ('Matveev', 'Nikita', '5423235')
+[2024-07-08 16:25:22.170595] Preparing the sandbox
+[2024-07-08 16:25:22.804786] Unpacking submission in sandbox
+[2024-07-08 16:25:23.198741] Building the test subject
+[2024-07-08 16:25:23.199057] Building submitted njvm with the supplied 'mknjvm'-script.
+[2024-07-08 16:25:23.501722] Build log:
+gcc -I ../../bigint/build/include -L ../../bigint/build/lib -g -Wall -std=c99 -pedantic -o njvm src/njvm.c -lbigint
+src/njvm.c:8:10: fatal error: bigint.h: No such file or directory
+    8 | #include <bigint.h>
+      |          ^~~~~~~~~~
+compilation terminated.
+[2024-07-08 16:25:23.501755] Error: '/home/solution/njvm/mknjvm' failed (Exit code 1)!'
+[2024-07-08 16:25:23.501767] Error: Could not build the submitted solution.
+[2024-07-08 16:25:23.501794] Building the test subject failed.
+[2024-07-08 16:25:23.801276] You have NOT PASSED this assignment.
+[2024-07-08 16:25:23.801557] You can try again. Deadline: 14.07.2024 23:59
+

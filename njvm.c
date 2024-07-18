@@ -11,7 +11,6 @@
 #define intValue(s) (s.u.number)
 #define IMMEDIATE(x) ((x) & 0x00FFFFFF)
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))  // 0x00800000 enstpricht einer 1 beim 24. Bit    Muss bei negativen Zahlen durchgeführt werden, damit bei Berechnungen das Vorzeichen beachtet wird, sonst wird es als positive Zahl betrachtet
-#define STACK_SIZE 64
 
 #define MSB         (1 << (8 * sizeof(unsigned int) - 1))
 #define BH         (1 << (8 * sizeof(unsigned int) - 2))
@@ -49,7 +48,7 @@ typedef struct{
 }StackSlot;
 
 int stackSize = 64;
-int heapSize = 64;
+int heapSize = 8192;
 
 // heap, using char to make it byte addressable
 
