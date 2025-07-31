@@ -12,7 +12,6 @@ The project uses a custom compiler and runtime environment:
 - **`njc`** — compiles `.nj` source files to `.asm` (assembly)
 - **`nja`** — assembles `.asm` files into `.bin` binaries
 - **`njvm`** — runs `.bin` binaries in a custom virtual machine
-- **`njvm`** — runs `.bin` binaries in a custom virtual machine
 
 ## How to Compile and Run
 
